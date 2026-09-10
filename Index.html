@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora Academy - Wallet & Payment System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B1F3A;--navy-light:#172B4D;--blue:#29A9E8;--blue-dark:#1E8BC3;--gold:#D4A63A;--gold-light:#E8C84A;--gold-dark:#A67C1E;--bg:#F5F7FA;--white:#FFF;--text-primary:#172B4D;--text-secondary:#64748B;--success:#16A34A;--danger:#EF4444;--warning:#F59E0B;--shadow:0 4px 20px rgba(11,31,58,0.12);--shadow-hover:0 8px 40px rgba(11,31,58,0.2);--radius:16px;--sidebar-width:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.6}
+a{text-decoration:none;color:inherit}
+
+/* TOP NAV */
+.top-nav{background:var(--navy);padding:10px 24px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:1001}
+.top-nav .container{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;flex-wrap:wrap;gap:1rem}
+.top-nav .brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+.top-nav .brand .logo-icon{font-size:2rem;color:var(--gold)}
+.top-nav .brand .brand-text-wrap{display:flex;flex-direction:column;line-height:1.1}
+.top-nav .brand .brand-text{font-size:1.4rem;font-weight:800;letter-spacing:1px}
+.top-nav .brand .brand-text .nexora{color:var(--blue)}
+.top-nav .brand .brand-text .academy{color:var(--white)}
+.top-nav .brand .tagline{font-size:0.55rem;color:var(--gold);letter-spacing:3px;font-weight:500;margin-top:1px}
+.top-nav .nav-links{display:flex;gap:1.8rem;align-items:center;flex-wrap:wrap}
+.top-nav .nav-links a{color:rgba(255,255,255,0.85);font-weight:500;font-size:0.95rem;padding:4px 0}
+.top-nav .nav-links a:hover{color:var(--blue)}
+.top-nav .nav-links .btn{padding:8px 20px;border-radius:50px;font-weight:600;display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-size:0.9rem}
+.btn-login{background:transparent;border:2px solid rgba(255,255,255,0.25);color:var(--white)}
+.btn-register{background:var(--gold);color:var(--navy);border:2px solid var(--gold)}
+.btn-logout{background:transparent;border:2px solid var(--danger);color:var(--danger)}
+.btn-logout:hover{background:var(--danger);color:var(--white)}
+.top-nav .nav-links .user-info{display:flex;align-items:center;gap:8px;color:var(--white)}
+.top-nav .nav-links .user-info .avatar{width:32px;height:32px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem}
+
+/* SIDEBAR */
+.sidebar-toggle-bar{background:var(--navy-light);padding:10px 24px;border-bottom:1px solid rgba(255,255,255,0.05);display:none;align-items:center;gap:12px}
+.sidebar-toggle-bar.visible{display:flex}
+.sidebar-toggle-bar .toggle-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--white);font-size:1.2rem;cursor:pointer;padding:8px 16px;border-radius:50px;display:flex;align-items:center;gap:10px}
+.sidebar-toggle-bar .toggle-btn span{font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.85)}
+.sidebar-toggle-bar .page-indicator{color:rgba(255,255,255,0.7);font-size:0.9rem;font-weight:500;margin-left:auto}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-width);height:100vh;background:var(--navy);color:rgba(255,255,255,0.8);z-index:1000;overflow-y:auto;transition:transform 0.3s ease;transform:translateX(-100%);padding-top:80px}
+.sidebar.open{transform:translateX(0)}
+.sidebar-brand{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sidebar-brand .brand-icon{font-size:1.5rem;color:var(--gold)}
+.sidebar-brand .brand-text{font-size:1rem;font-weight:800}
+.sidebar-brand .brand-text .nexora{color:var(--blue)}
+.sidebar-brand .brand-text .academy{color:var(--white)}
+.sidebar-menu{padding:12px 0}
+.menu-item{display:flex;align-items:center;gap:12px;padding:12px 16px;color:rgba(255,255,255,0.75);cursor:pointer;font-size:0.9rem;border-left:3px solid transparent}
+.menu-item:hover{background:rgba(255,255,255,0.05);color:var(--white)}
+.menu-item.active{background:rgba(41,169,232,0.15);color:var(--blue);border-left-color:var(--blue)}
+.menu-item i{width:20px;text-align:center;font-size:1rem}
+.menu-item .badge-count{background:var(--gold);color:var(--navy);font-size:0.65rem;padding:1px 8px;border-radius:50px;margin-left:auto;font-weight:700}
+.menu-divider{height:1px;background:rgba(255,255,255,0.06);margin:8px 16px}
+.menu-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.3);padding:10px 16px 6px;font-weight:700}
+
+/* MAIN */
+.main-content{margin-left:0;transition:margin-left 0.3s ease;min-height:100vh}
+.main-content.sidebar-open{margin-left:var(--sidebar-width)}
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999}
+.sidebar-overlay.active{display:block}
+.page-content{padding:24px;max-width:1200px;margin:0 auto}
+.page{display:none}
+.page.active{display:block}
+
+/* LANDING */
+.landing-hero{text-align:center;padding:4rem 0 3rem}
+.landing-hero .badge-tag{display:inline-block;background:rgba(212,166,58,0.15);border:1px solid rgba(212,166,58,0.3);color:var(--gold);padding:6px 18px;border-radius:50px;font-size:0.75rem;font-weight:700;letter-spacing:2px;margin-bottom:1.5rem}
+.landing-hero h1{font-size:3.5rem;font-weight:800;color:var(--navy);line-height:1.15;margin-bottom:1.2rem}
+.landing-hero h1 .gold{color:var(--gold)}
+.landing-hero p{color:var(--text-secondary);font-size:1.15rem;max-width:620px;margin:0 auto 2rem}
+.landing-hero .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.landing-hero .hero-buttons .btn{padding:14px 36px;font-size:1rem;border-radius:50px;font-weight:700;display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer}
+.btn-primary-hero{background:var(--blue);color:var(--white)}
+.btn-outline-hero{background:transparent;color:var(--navy);border:2px solid #e2e8f0}
+.landing-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;padding:2rem 0 3rem}
+.landing-features .feature{background:var(--white);padding:2rem 1.5rem;border-radius:var(--radius);box-shadow:var(--shadow);text-align:center}
+.landing-features .feature .feature-icon{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,rgba(212,166,58,0.15),rgba(41,169,232,0.15));display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem}
+.landing-features .feature .feature-icon i{font-size:1.8rem;color:var(--gold)}
+.landing-features .feature h3{color:var(--navy);margin-bottom:0.5rem;font-size:1.1rem}
+.landing-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem;padding:2rem 0;text-align:center;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:2rem}
+.landing-stats .stat h3{font-size:2.2rem;font-weight:800;color:var(--navy)}
+.landing-stats .stat h3 .gold{color:var(--gold)}
+.landing-stats .stat p{color:var(--text-secondary);font-size:0.9rem}
+
+/* BADGES */
+.badge{padding:3px 12px;border-radius:50px;font-size:0.7rem;font-weight:600;display:inline-block}
+.badge-published{background:#dcfce7;color:#166534}
+.badge-draft{background:#fef3c7;color:#92400e}
+.badge-success{background:#dcfce7;color:#166534}
+.badge-warning{background:#fef3c7;color:#92400e}
+.badge-danger{background:#fee2e2;color:#991b1b}
+.badge-passed{background:#dcfce7;color:#166534}
+.badge-failed{background:#fee2e2;color:#991b1b}
+.badge-paid{background:#dcfce7;color:#166534}
+.badge-unpaid{background:#fee2e2;color:#991b1b}
+.badge-partial{background:#fef3c7;color:#92400e}
+.badge-active{background:#dbeafe;color:#1e40af}
+
+/* FLASH */
+.flash{padding:1rem 1.5rem;border-radius:var(--radius);margin:1rem 0;font-weight:500}
+.flash-success{background:#dcfce7;color:#166534;border-left:4px solid var(--success)}
+.flash-danger{background:#fee2e2;color:#991b1b;border-left:4px solid var(--danger)}
+.flash-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--blue)}
+.flash-warning{background:#fef3c7;color:#92400e;border-left:4px solid var(--warning)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin:1.5rem 0}
+.stat-card{background:var(--white);padding:1.5rem;border-radius:var(--radius);box-shadow:var(--shadow);text-align:center;border-left:4px solid var(--blue)}
+.stat-card .stat-number{font-size:2.5rem;font-weight:800;color:var(--navy)}
+.stat-card .stat-label{color:var(--text-secondary);font-size:0.9rem;font-weight:500}
+.stat-card.gold{border-left-color:var(--gold)}
+.stat-card.green{border-left-color:var(--success)}
+.stat-card.purple{border-left-color:#8B5CF6}
+.stat-card.wallet{border-left-color:var(--blue);background:linear-gradient(135deg,#fff,#f0f9ff)}
+
+/* FORMS */
+.form-group{margin-bottom:1.5rem}
+.form-group label{display:block;font-weight:600;margin-bottom:0.4rem;color:var(--navy);font-size:0.9rem}
+.form-group label .required{color:var(--danger)}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:1rem;background:var(--white);color:var(--text-primary);font-family:inherit}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(41,169,232,0.1)}
+.form-group textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+/* BUTTONS */
+.btn{padding:10px 22px;border-radius:50px;font-weight:600;font-size:0.9rem;display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--blue);color:var(--white)}
+.btn-primary:hover{background:var(--blue-dark)}
+.btn-success{background:var(--success);color:var(--white)}
+.btn-success:hover{background:#15803d}
+.btn-warning{background:var(--warning);color:var(--white)}
+.btn-warning:hover{background:#d97706}
+.btn-danger{background:var(--danger);color:var(--white)}
+.btn-danger:hover{background:#dc2626}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-outline{background:transparent;border:2px solid #e2e8f0;color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-sm{padding:6px 14px;font-size:0.8rem}
+.btn-lg{padding:14px 36px;font-size:1rem}
+.btn-block{width:100%;justify-content:center}
+
+/* TABLE */
+.table-wrapper{overflow-x:auto;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+table thead{background:var(--navy);color:var(--white)}
+table thead th{padding:0.9rem 1rem;text-align:left;font-weight:600;font-size:0.8rem;text-transform:uppercase}
+table tbody td{padding:0.9rem 1rem;border-bottom:1px solid #f0f0f0;color:var(--text-secondary);font-size:0.9rem}
+table tbody tr:hover{background:#f8fafc}
+
+/* PROGRESS */
+.progress-bar{width:100%;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin:0.5rem 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:4px;transition:width 0.5s}
+
+/* COURSE GRID */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin:1.5rem 0}
+.course-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(11,31,58,0.06)}
+.course-card .course-image{width:100%;height:160px;object-fit:cover;background:linear-gradient(135deg,var(--navy),var(--navy-light))}
+.course-card .course-body{padding:1.2rem}
+.course-card .course-body .course-title{font-size:1.1rem;font-weight:700;color:var(--navy)}
+.course-card .course-body .course-meta{display:flex;gap:1rem;flex-wrap:wrap;font-size:0.8rem;color:var(--text-secondary);margin:0.3rem 0}
+.course-card-actions{display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(11,31,58,0.6);backdrop-filter:blur(6px);z-index:2000;align-items:center;justify-content:center;padding:1rem}
+.modal-backdrop.active{display:flex}
+.modal-box{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-hover);max-width:760px;width:100%;max-height:92vh;overflow-y:auto;padding:2rem}
+.modal-box h2{color:var(--navy);margin-bottom:1.5rem;display:flex;align-items:center;gap:10px}
+.modal-box h2 i{color:var(--gold)}
+
+/* WALLET CARD */
+.wallet-hero{background:linear-gradient(135deg,var(--navy) 0%,#1a3a5c 100%);color:#fff;padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow-hover);margin-bottom:1.5rem;position:relative;overflow:hidden}
+.wallet-hero::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,166,58,0.15) 0%,transparent 70%);border-radius:50%}
+.wallet-hero h2{font-size:1.5rem;margin-bottom:0.3rem;color:#fff}
+.wallet-hero p{opacity:0.75;font-size:0.9rem}
+.wallet-hero .balances{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-top:1.5rem;position:relative;z-index:1}
+.wallet-hero .bal-box{background:rgba(255,255,255,0.08);padding:1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.1)}
+.wallet-hero .bal-box .lbl{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;opacity:0.7}
+.wallet-hero .bal-box .val{font-size:1.5rem;font-weight:700;color:var(--gold)}
+.wallet-hero .bal-box .val.green{color:#86efac}
+.wallet-hero .bal-box .val.red{color:#fca5a5}
+
+/* ENROLLED COURSE CARD */
+.enrolled-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem;border-left:4px solid var(--gold)}
+.enrolled-card h4{color:var(--navy);font-size:1.1rem;margin-bottom:0.3rem}
+.enrolled-card .meta{font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.5rem}
+.enrolled-card .stats-line{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.8rem;margin:1rem 0;font-size:0.85rem}
+.enrolled-card .stat-box{background:var(--bg);padding:0.6rem 0.8rem;border-radius:8px;text-align:center}
+.enrolled-card .stat-box .lbl{font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px}
+.enrolled-card .stat-box .val{font-weight:700;color:var(--navy);font-size:1rem}
+
+/* ACTIVITY LOG */
+.activity-item{display:flex;gap:0.8rem;padding:0.75rem 0;border-bottom:1px solid #f0f0f0;font-size:0.9rem}
+.activity-item:last-child{border-bottom:none}
+.activity-item .a-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);color:var(--gold)}
+.activity-item .a-content{flex:1}
+.activity-item .a-title{font-weight:600;color:var(--navy)}
+.activity-item .a-time{font-size:0.75rem;color:var(--text-secondary)}
+
+/* FILE UPLOAD */
+.file-upload-container{border:2px dashed #e2e8f0;border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;background:var(--bg)}
+.file-upload-container:hover{border-color:var(--blue);background:rgba(41,169,232,0.05)}
+.file-upload-container .upload-icon{font-size:2.5rem;color:var(--gold);margin-bottom:0.5rem}
+.file-upload-container .upload-text{color:var(--text-secondary);font-size:0.9rem}
+.file-upload-container .upload-hint{color:var(--text-secondary);font-size:0.8rem;margin-top:0.3rem}
+.file-upload-container input[type="file"]{display:none}
+
+/* REGISTER MULTI-STEP */
+.step-indicator{display:flex;justify-content:center;gap:8px;margin-bottom:2rem}
+.step-indicator .si{width:34px;height:34px;border-radius:50%;background:#e2e8f0;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem}
+.step-indicator .si.active{background:var(--blue);color:var(--white)}
+.step-indicator .si.done{background:var(--success);color:var(--white)}
+.reg-step{display:none}
+.reg-step.active{display:block}
+
+/* CERTIFICATE */
+.cert-stage{padding:2rem 0;display:flex;justify-content:center}
+.cert{position:relative;width:100%;max-width:1000px;aspect-ratio:1414/1000;background:#FAF7F0;font-family:'Cinzel',serif;color:#0B1F3A;box-shadow:0 20px 60px rgba(11,31,58,0.35);overflow:hidden;border-radius:6px}
+.cert::before{content:'';position:absolute;top:0;left:0;width:32%;height:24%;background:var(--navy);clip-path:polygon(0 0,100% 0,100% 55%,78% 55%,78% 100%,0 100%);z-index:1}
+.cert::after{content:'';position:absolute;bottom:0;right:0;width:32%;height:24%;background:var(--navy);clip-path:polygon(0 45%,22% 45%,22% 0,100% 0,100% 100%,0 100%);z-index:1}
+.cert-inner-frame{position:absolute;inset:24px;border:2px solid var(--navy);z-index:2;pointer-events:none}
+.cert-inner-frame::before{content:'';position:absolute;inset:6px;border:1px solid var(--gold)}
+.cert-content{position:relative;z-index:4;padding:6% 8% 5%;height:100%;display:flex;flex-direction:column;align-items:center;text-align:center}
+.cert-logo-row{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:8px}
+.cert-crest{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#1E8BC3 0%,#0B1F3A 70%);display:flex;align-items:center;justify-content:center;border:3px solid var(--gold)}
+.cert-crest i{font-size:2rem;color:var(--gold)}
+.cert-logo-text{text-align:left;line-height:1}
+.cert-logo-text .name{font-size:2.2rem;font-weight:900;letter-spacing:4px;color:var(--navy)}
+.cert-logo-text .sub{font-size:1rem;font-weight:700;letter-spacing:10px;color:var(--gold);margin-top:4px}
+.cert-logo-text .tag{font-size:0.62rem;letter-spacing:4px;color:#6b7280;margin-top:6px;font-weight:500}
+.cert-id-box{position:absolute;top:6%;right:8%;text-align:right}
+.cert-id-box .lbl{font-size:0.55rem;letter-spacing:2px;color:#6b7280;font-weight:600}
+.cert-id-box .num{font-size:0.78rem;font-weight:700;color:var(--navy)}
+.cert-title-main{font-size:3.4rem;font-weight:900;letter-spacing:12px;color:var(--navy);margin-top:8px;line-height:1}
+.cert-title-sub{font-size:1.15rem;font-weight:700;letter-spacing:8px;color:var(--gold-dark);margin-top:6px}
+.cert-title-line{display:flex;align-items:center;gap:12px;width:60%;margin:14px auto 0}
+.cert-title-line::before,.cert-title-line::after{content:'';flex:1;height:1px;background:var(--gold)}
+.cert-title-line .diamond{width:10px;height:10px;background:var(--gold);transform:rotate(45deg)}
+.cert-certify{font-family:'Playfair Display',serif;font-style:italic;font-size:0.95rem;color:#475569;margin-top:22px}
+.cert-student-name{font-family:'Great Vibes',cursive;font-size:4.2rem;color:var(--navy);line-height:1;margin:10px 0 4px}
+.cert-name-line{width:55%;height:1px;background:var(--gold);margin:4px auto 14px}
+.cert-body-text{font-family:'Playfair Display',serif;font-size:0.9rem;color:#475569;max-width:78%;line-height:1.6}
+.cert-course-name{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:700;color:var(--gold-dark);letter-spacing:2px;margin:10px 0 14px;text-transform:uppercase}
+.cert-course-name::before{content:'—  ';color:var(--navy)}
+.cert-course-name::after{content:'  —';color:var(--navy)}
+.cert-bottom-row{display:grid;grid-template-columns:1fr auto;gap:24px;width:100%;margin-top:auto;padding-top:12px;align-items:end}
+.cert-requirements{text-align:left;font-family:'Playfair Display',serif;font-size:0.72rem;color:#334155;line-height:1.9}
+.cert-requirements .req-line{display:flex;align-items:center;gap:8px}
+.cert-requirements .chk{width:12px;height:12px;border-radius:50%;background:var(--gold);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;flex-shrink:0}
+.cert-qr{text-align:center}
+.cert-qr .qr-title{font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--navy);margin-bottom:6px}
+.cert-qr .qr-box{width:100px;height:100px;border:2px solid var(--navy);padding:4px;background:#fff;display:inline-flex;align-items:center;justify-content:center}
+.cert-qr .qr-caption{font-size:0.55rem;color:#475569;margin-top:6px}
+.cert-signature-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;width:100%;margin-top:20px;align-items:end}
+.cert-sig{text-align:center}
+.cert-sig .sig-script{font-family:'Great Vibes',cursive;font-size:1.3rem;color:var(--navy);line-height:1;margin-bottom:4px}
+.cert-sig .sig-line{border-top:1.2px solid var(--navy);margin:0 12px 4px}
+.cert-sig .sig-role{font-size:0.62rem;letter-spacing:2px;color:#475569;font-weight:700;text-transform:uppercase}
+.cert-seal{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 40% 30%,#E8C84A 0%,#D4A63A 45%,#A67C1E 100%);display:flex;align-items:center;justify-content:center;border:3px solid var(--navy);margin:0 auto}
+.cert-seal-inner{width:68px;height:68px;border-radius:50%;background:var(--navy);border:1.5px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.cert-seal-inner i{color:var(--gold);font-size:1.2rem;margin-bottom:2px}
+.cert-seal-inner .txt{font-size:0.42rem;letter-spacing:1px;color:var(--gold);font-weight:700;text-align:center;line-height:1.1}
+.cert-footer-note{font-family:'Playfair Display',serif;font-style:italic;font-size:0.62rem;color:#64748b;margin-top:10px;text-align:center;width:100%}
+
+/* FOOTER */
+.footer{background:var(--navy);color:rgba(255,255,255,0.8);padding:50px 0 30px;margin-top:3rem;border-top:3px solid var(--gold)}
+.footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;max-width:1200px;margin:0 auto;padding:0 24px}
+.footer .brand .logo-bottom{font-size:1.6rem;font-weight:800}
+.footer .brand .logo-bottom .nexora{color:var(--blue)}
+.footer .brand .logo-bottom .academy{color:var(--white)}
+.footer .brand .tagline{color:var(--gold);font-weight:300;letter-spacing:2px;margin:0.5rem 0 1rem}
+.footer .brand p{color:rgba(255,255,255,0.6);line-height:1.8;font-size:0.9rem}
+.footer h4{color:var(--white);margin-bottom:1rem;font-size:1rem}
+.footer ul{list-style:none;padding:0}
+.footer ul li{margin-bottom:0.5rem}
+.footer ul li a{color:rgba(255,255,255,0.6);font-size:0.9rem;cursor:pointer}
+.footer ul li a:hover{color:var(--gold)}
+.footer .contact-buttons{display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem}
+.footer .contact-buttons a{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;border:2px solid rgba(255,255,255,0.1);color:var(--white);width:fit-content}
+.footer .contact-buttons a:hover{border-color:var(--gold);color:var(--gold)}
+.footer .bottom{grid-column:1/-1;border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;text-align:center;color:rgba(255,255,255,0.4);font-size:0.85rem}
+.footer .bottom .gold{color:var(--gold)}
+
+/* AUTH */
+.auth-wrap{max-width:460px;margin:3rem auto}
+.auth-wrap.wide{max-width:600px}
+.auth-logo{text-align:center;margin-bottom:2rem}
+.auth-logo .auth-brand{font-size:2.5rem;font-weight:800;color:var(--blue);letter-spacing:2px}
+.auth-logo .auth-academy{font-size:0.9rem;color:var(--gold);letter-spacing:4px;font-weight:700}
+.auth-logo .auth-tagline{font-size:0.7rem;color:var(--text-secondary);letter-spacing:2px;margin-top:0.3rem}
+.auth-card{background:var(--white);padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow)}
+.auth-card h2{text-align:center;color:var(--navy);margin-bottom:1.5rem;font-size:1.4rem}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr)}.footer .container{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.sidebar{width:280px;padding-top:60px}.main-content{margin-left:0!important}.form-row{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}.page-content{padding:16px}.footer .container{grid-template-columns:1fr}.top-nav .brand .tagline{display:none}.top-nav .nav-links{gap:0.8rem}.top-nav .nav-links a{font-size:0.85rem}.landing-hero h1{font-size:2.2rem}}
+@media(max-width:480px){.page-content{padding:12px}.stat-card .stat-number{font-size:1.8rem}.landing-hero h1{font-size:1.8rem}.footer .contact-buttons a{width:100%;justify-content:center}.top-nav .brand .brand-text{font-size:1.1rem}}
+.hidden{display:none!important}
+.text-center{text-align:center}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+<div class="container">
+<div class="brand" onclick="goHome()">
+<span class="logo-icon"><i class="fas fa-graduation-cap"></i></span>
+<div class="brand-text-wrap">
+<span class="brand-text"><span class="nexora">NEXORA</span> <span class="academy">ACADEMY</span></span>
+<span class="tagline">EXPERT ONLINE · QUALITY EDUCATION</span>
+</div>
+</div>
+<div class="nav-links">
+<a href="#" onclick="goHome()"><i class="fas fa-home"></i> Home</a>
+<a href="#" onclick="showCoursesPublic()"><i class="fas fa-book-open"></i> Courses</a>
+<a href="#" onclick="showVerifyPublic()"><i class="fas fa-certificate"></i> Verify</a>
+<span id="topAuthLinks">
+<a href="#" onclick="showLogin()" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Login</a>
+<a href="#" onclick="showRegister()" class="btn btn-register"><i class="fas fa-user-plus"></i> Register</a>
+</span>
+<span id="topUserLinks" class="hidden">
+<span class="user-info"><span class="avatar" id="topUserAvatar">A</span><span id="topUserName">Admin</span></span>
+<a href="#" onclick="logout()" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</span>
+</div>
+</div>
+</nav>
+
+<div class="sidebar-toggle-bar" id="sidebarToggleBar">
+<button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i><span id="sidebarToggleLabel">MENU</span></button>
+<span class="page-indicator" id="pageIndicator"></span>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-brand"><span class="brand-icon"><i class="fas fa-graduation-cap"></i></span><span class="brand-text"><span class="nexora">NEXORA</span> <span class="academy">ACADEMY</span></span></div>
+<nav class="sidebar-menu">
+<div id="adminMenu" class="hidden">
+<div class="menu-item active" onclick="navigateTo('admin-dashboard')"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
+<div class="menu-label">Management</div>
+<div class="menu-item" onclick="navigateTo('admin-students')"><i class="fas fa-users"></i><span>Students</span><span class="badge-count" id="studentCount">0</span></div>
+<div class="menu-item" onclick="navigateTo('admin-applications')"><i class="fas fa-user-clock"></i><span>Applications</span><span class="badge-count" id="appCount">0</span></div>
+<div class="menu-item" onclick="navigateTo('admin-instructors')"><i class="fas fa-chalkboard-teacher"></i><span>Instructors</span><span class="badge-count" id="instructorCount">0</span></div>
+<div class="menu-label">Courses</div>
+<div class="menu-item" onclick="navigateTo('admin-courses')"><i class="fas fa-book"></i><span>All Courses</span><span class="badge-count" id="courseCount">0</span></div>
+<div class="menu-item" onclick="navigateTo('admin-builder')"><i class="fas fa-plus-circle"></i><span>Add New Course</span></div>
+<div class="menu-label">Assessment</div>
+<div class="menu-item" onclick="navigateTo('admin-exams')"><i class="fas fa-pencil-alt"></i><span>Examinations</span></div>
+<div class="menu-item" onclick="navigateTo('admin-certificates')"><i class="fas fa-certificate"></i><span>Certificates</span></div>
+<div class="menu-label">Finance</div>
+<div class="menu-item" onclick="navigateTo('admin-revenue')"><i class="fas fa-chart-line"></i><span>Revenue</span></div>
+<div class="menu-item" onclick="navigateTo('admin-payments')"><i class="fas fa-credit-card"></i><span>Payments</span></div>
+<div class="menu-divider"></div>
+<div class="menu-item" onclick="navigateTo('admin-settings')"><i class="fas fa-cog"></i><span>Settings</span></div>
+<div class="menu-item" onclick="logout()" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div>
+</div>
+<div id="studentMenu" class="hidden">
+<div class="menu-item active" onclick="navigateTo('student-dashboard')"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
+<div class="menu-item" onclick="navigateTo('student-wallet')"><i class="fas fa-wallet"></i><span>Wallet & Payments</span></div>
+<div class="menu-item" onclick="navigateTo('student-courses')"><i class="fas fa-book-open"></i><span>My Courses</span><span class="badge-count" id="studentEnrollCount">0</span></div>
+<div class="menu-item" onclick="navigateTo('student-results')"><i class="fas fa-clipboard-list"></i><span>Results</span></div>
+<div class="menu-item" onclick="navigateTo('student-exams')"><i class="fas fa-pencil-alt"></i><span>Exams & CATs</span></div>
+<div class="menu-item" onclick="navigateTo('student-certificates')"><i class="fas fa-certificate"></i><span>My Certificates</span></div>
+<div class="menu-item" onclick="navigateTo('student-profile')"><i class="fas fa-user"></i><span>Profile</span></div>
+<div class="menu-divider"></div>
+<div class="menu-item" onclick="logout()" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div>
+</div>
+</nav>
+</aside>
+
+<div class="main-content" id="mainContent">
+<div class="page-content">
+
+<!-- LANDING -->
+<div id="page-landing" class="page active">
+<section class="landing-hero">
+<span class="badge-tag"><i class="fas fa-star"></i> NEXORA ACADEMY</span>
+<h1>Learn. <span class="gold">Grow.</span> Achieve.</h1>
+<p>Build practical, career-focused skills with expert instructors from anywhere in the world.</p>
+<div class="hero-buttons">
+<button class="btn btn-primary-hero" onclick="showRegister()"><i class="fas fa-rocket"></i> Get Started</button>
+<button class="btn btn-outline-hero" onclick="showCoursesPublic()"><i class="fas fa-book-open"></i> Browse Courses</button>
+</div>
+</section>
+<section class="landing-stats">
+<div class="stat"><h3>1,000<span class="gold">+</span></h3><p>Active Students</p></div>
+<div class="stat"><h3>20<span class="gold">+</span></h3><p>Expert Courses</p></div>
+<div class="stat"><h3>15<span class="gold">+</span></h3><p>Instructors</p></div>
+<div class="stat"><h3>95<span class="gold">%</span></h3><p>Completion Rate</p></div>
+</section>
+<section class="landing-features">
+<div class="feature"><div class="feature-icon"><i class="fas fa-graduation-cap"></i></div><h3>Expert Instructors</h3><p>Learn from industry professionals with years of experience.</p></div>
+<div class="feature"><div class="feature-icon"><i class="fas fa-wallet"></i></div><h3>Lipa Mdogo Mdogo</h3><p>Pay for your course in installments. Pay as little as you can.</p></div>
+<div class="feature"><div class="feature-icon"><i class="fas fa-certificate"></i></div><h3>Certified Courses</h3><p>Earn recognized certificates upon completion.</p></div>
+<div class="feature"><div class="feature-icon"><i class="fas fa-globe-africa"></i></div><h3>Learn Anywhere</h3><p>Access your courses from any device, anywhere.</p></div>
+</section>
+</div>
+
+<!-- PUBLIC COURSES -->
+<div id="page-courses" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-book-open" style="color:var(--gold)"></i> All Courses</h2>
+<div id="allCoursesList" class="courses-grid"></div>
+</div>
+
+<!-- VERIFY -->
+<div id="page-verify" class="page">
+<div style="max-width:600px;margin:2rem auto 1rem">
+<div class="auth-card">
+<h2><i class="fas fa-certificate" style="color:var(--gold)"></i> Verify Certificate</h2>
+<p style="color:var(--text-secondary);margin-bottom:1.5rem;text-align:center">Enter certificate ID or verification token</p>
+<div class="form-group"><input type="text" id="verifyToken" placeholder="e.g., NXA-CP-2026-000001"></div>
+<button class="btn btn-primary btn-block" onclick="verifyCertificate()"><i class="fas fa-search"></i> Verify</button>
+</div>
+</div>
+<div id="verifyResult"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="page-login" class="page">
+<div class="auth-wrap">
+<div class="auth-logo"><div class="auth-brand">NEXORA</div><div class="auth-academy">ACADEMY</div><div class="auth-tagline">LEARN · GROW · ACHIEVE</div></div>
+<div class="auth-card">
+<h2><i class="fas fa-sign-in-alt" style="color:var(--gold)"></i> Welcome Back</h2>
+<div id="loginFlash"></div>
+<form onsubmit="loginUser(event)">
+<div class="form-group"><label>Email</label><input type="email" id="loginEmail" required></div>
+<div class="form-group"><label>Password</label><input type="password" id="loginPassword" required></div>
+<button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Login</button>
+</form>
+<p class="text-center" style="color:var(--text-secondary);font-size:0.9rem;margin-top:1.5rem">Don't have an account? <a onclick="showRegister()" style="color:var(--blue);font-weight:600;cursor:pointer">Register</a></p>
+</div>
+</div>
+</div>
+
+<!-- REGISTER -->
+<div id="page-register" class="page">
+<div class="auth-wrap wide">
+<div class="auth-logo"><div class="auth-brand">NEXORA</div><div class="auth-academy">ACADEMY</div><div class="auth-tagline">LEARN · GROW · ACHIEVE</div></div>
+<div class="step-indicator" id="regStepIndicator">
+<div class="si active" data-s="1">1</div><div class="si" data-s="2">2</div><div class="si" data-s="3">3</div><div class="si" data-s="4">4</div>
+</div>
+<div class="auth-card">
+<div id="registerFlash"></div>
+<div class="reg-step active" id="reg-step-1">
+<h2><i class="fas fa-user" style="color:var(--gold)"></i> Personal Details</h2>
+<form onsubmit="regStep1(event)">
+<div class="form-row">
+<div class="form-group"><label>Full Name <span class="required">*</span></label><input type="text" id="regFullName" required></div>
+<div class="form-group"><label>Username <span class="required">*</span></label><input type="text" id="regUsername" required></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Email <span class="required">*</span></label><input type="email" id="regEmail" required></div>
+<div class="form-group"><label>Phone <span class="required">*</span></label><input type="tel" id="regPhone" required></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Date of Birth <span class="required">*</span></label><input type="date" id="regDob" required></div>
+<div class="form-group"><label>Country <span class="required">*</span></label><input type="text" id="regCountry" required></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Role</label><select id="regRole"><option value="student">Student</option><option value="instructor">Instructor</option></select></div>
+<div class="form-group"><label>Password <span class="required">*</span></label><input type="password" id="regPassword" required minlength="6"></div>
+</div>
+<button type="submit" class="btn btn-primary btn-block"><i class="fas fa-arrow-right"></i> Continue</button>
+</form>
+</div>
+<div class="reg-step" id="reg-step-2">
+<h2><i class="fas fa-id-card" style="color:var(--gold)"></i> National ID Upload</h2>
+<p style="color:var(--text-secondary);text-align:center;margin-bottom:1.5rem;font-size:0.9rem">Upload a clear photo/scan of your national ID for verification.</p>
+<div class="form-group">
+<label>National ID Image <span class="required">*</span></label>
+<div class="file-upload-container" onclick="document.getElementById('regIdInput').click()">
+<div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+<div class="upload-text">Click to upload national ID</div>
+<div class="upload-hint">PNG, JPG up to 5MB</div>
+<input type="file" id="regIdInput" accept="image/*" onchange="handleIdUpload(event)">
+</div>
+<div id="idPreviewContainer" style="margin-top:1rem;display:none"><img id="idPreview" style="max-width:100%;border-radius:10px;border:2px solid #e2e8f0"></div>
+</div>
+<div style="display:flex;gap:0.5rem">
+<button class="btn btn-outline" onclick="regGoBack(1)"><i class="fas fa-arrow-left"></i> Back</button>
+<button class="btn btn-primary" style="flex:1;justify-content:center" onclick="regStep2()"><i class="fas fa-paper-plane"></i> Submit Application</button>
+</div>
+</div>
+<div class="reg-step" id="reg-step-3">
+<div style="text-align:center;padding:1rem 0">
+<i class="fas fa-hourglass-half" style="font-size:3.5rem;color:var(--warning);margin-bottom:1rem"></i>
+<h2 style="color:var(--navy)">Waiting for Approval</h2>
+<p style="color:var(--text-secondary);margin:1rem 0">Your application has been submitted. Please wait while our admissions team reviews your details.</p>
+<div class="flash flash-warning"><i class="fas fa-clock"></i> Status: <strong>PENDING</strong></div>
+<div style="background:var(--bg);padding:1rem;border-radius:12px;margin-top:1rem;text-align:left;font-size:0.9rem">
+<div><strong>Application ID:</strong> <span id="regAppId">—</span></div>
+<div style="margin-top:0.3rem"><strong>Email:</strong> <span id="regPendingEmail">—</span></div>
+</div>
+<button class="btn btn-outline" style="margin-top:1.5rem" onclick="regCheckStatus()"><i class="fas fa-sync"></i> Check Status</button>
+</div>
+</div>
+<div class="reg-step" id="reg-step-4">
+<div style="text-align:center;padding:1rem 0">
+<i class="fas fa-check-circle" style="font-size:3.5rem;color:var(--success);margin-bottom:1rem"></i>
+<h2 style="color:var(--navy)">Application Approved!</h2>
+<p style="color:var(--text-secondary);margin:1rem 0">Pay the one-time $0.50 activation fee to activate your account.</p>
+<div style="background:var(--bg);padding:1.5rem;border-radius:12px;margin:1rem 0">
+<div style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase">Activation Fee</div>
+<div style="font-size:2.5rem;font-weight:800;color:var(--gold)">$0.50</div>
+<div style="font-size:0.85rem;color:var(--text-secondary)">One-time account activation</div>
+</div>
+<button class="btn btn-success btn-block" onclick="payActivationFee()"><i class="fas fa-credit-card"></i> Pay $0.50 Now</button>
+<div id="feeFlash" style="margin-top:1rem"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- STUDENT DASHBOARD -->
+<div id="page-student-dashboard" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-tachometer-alt" style="color:var(--gold)"></i> My Dashboard</h2>
+<div id="studentDashboardContent"></div>
+</div>
+
+<!-- STUDENT WALLET -->
+<div id="page-student-wallet" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-wallet" style="color:var(--gold)"></i> Wallet & Payments</h2>
+<div id="studentWalletContent"></div>
+</div>
+
+<!-- STUDENT COURSES -->
+<div id="page-student-courses" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-book-open" style="color:var(--gold)"></i> My Courses</h2>
+<div id="studentCoursesList"></div>
+</div>
+
+<!-- STUDENT RESULTS -->
+<div id="page-student-results" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-clipboard-list" style="color:var(--gold)"></i> My Results</h2>
+<div id="studentResultsTable"></div>
+</div>
+
+<!-- STUDENT EXAMS -->
+<div id="page-student-exams" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-pencil-alt" style="color:var(--gold)"></i> My Exams & CATs</h2>
+<div id="studentExamsContent"></div>
+</div>
+
+<!-- STUDENT CERTIFICATES -->
+<div id="page-student-certificates" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-certificate" style="color:var(--gold)"></i> My Certificates</h2>
+<div id="studentCertificatesList"></div>
+</div>
+
+<!-- STUDENT PROFILE -->
+<div id="page-student-profile" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-user" style="color:var(--gold)"></i> My Profile</h2>
+<div id="studentProfileContent"></div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="page-admin-dashboard" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-chart-pie" style="color:var(--gold)"></i> Admin Dashboard</h2>
+<div class="stats-grid" id="adminStats"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem">
+<div style="background:var(--white);padding:1.5rem;border-radius:var(--radius);box-shadow:var(--shadow)"><h3 style="color:var(--navy);margin-bottom:1rem">Top Courses</h3><div id="topCourses"></div></div>
+<div style="background:var(--white);padding:1.5rem;border-radius:var(--radius);box-shadow:var(--shadow)"><h3 style="color:var(--navy);margin-bottom:1rem">Recent Enrollments</h3><div id="recentEnrollments"></div></div>
+</div>
+</div>
+
+<!-- ADMIN APPLICATIONS -->
+<div id="page-admin-applications" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-user-clock" style="color:var(--gold)"></i> Student Applications</h2>
+<div id="adminApplicationsList"></div>
+</div>
+
+<!-- ADMIN STUDENTS -->
+<div id="page-admin-students" class="page">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+<h2 style="color:var(--navy)"><i class="fas fa-users" style="color:var(--gold)"></i> Students</h2>
+</div>
+<div id="adminStudentsList"></div>
+</div>
+
+<!-- ADMIN STUDENT DETAIL -->
+<div id="page-admin-student-detail" class="page">
+<div id="adminStudentDetailContent"></div>
+</div>
+
+<!-- ADMIN INSTRUCTORS -->
+<div id="page-admin-instructors" class="page">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+<h2 style="color:var(--navy)"><i class="fas fa-chalkboard-teacher" style="color:var(--gold)"></i> Instructors</h2>
+<button class="btn btn-success" onclick="openAddInstructorModal()"><i class="fas fa-plus"></i> Add Instructor</button>
+</div>
+<div id="adminInstructorsList"></div>
+</div>
+
+<!-- ADMIN COURSES -->
+<div id="page-admin-courses" class="page">
+<h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-book" style="color:var(--gold)"></i> All Courses</h2>
+<div id="adminCoursesList" class="courses-grid"></div>
+</div>
+
+<!-- ADMIN BUILDER -->
+<div id="page-admin-builder" class="page">
+<div style="background:var(--white);padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow)">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #e2e8f0">
+<h1 style="font-size:1.6rem;color:var(--navy);display:flex;align-items:center;gap:12px"><i class="fas fa-plus-circle" style="color:var(--gold)"></i> Create New Course</h1>
+<div><span class="badge badge-draft" id="courseStatusBadge">Draft</span></div>
+</div>
+<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:2rem;padding:1rem;background:var(--bg);border-radius:12px">
+<button class="btn btn-primary btn-sm" onclick="goToStep(0)">1. Basic Info</button>
+<button class="btn btn-outline btn-sm" onclick="goToStep(1)">2. Payment</button>
+<button class="btn btn-outline btn-sm" onclick="goToStep(2)">3. Content</button>
+<button class="btn btn-outline btn-sm" onclick="goToStep(3)">4. Exam & CAT</button>
+<button class="btn btn-outline btn-sm" onclick="goToStep(4)">5. Publish</button>
+</div>
+<div id="step-0" class="step-content active">
+<div style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;display:flex;align-items:center;gap:10px"><i class="fas fa-info-circle" style="color:var(--gold)"></i> Basic Course Information</div>
+<div class="form-row">
+<div class="form-group"><label>Course Title <span class="required">*</span></label><input type="text" id="courseTitle"></div>
+<div class="form-group"><label>Course Code</label><input type="text" id="courseCode" placeholder="e.g., NXA-CP-101"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Category</label><select id="courseCategory"><option>IT & Technology</option><option>Business</option><option>Finance</option><option>Education</option><option>Design</option><option>Marketing</option><option>Personal Development</option><option>Engineering</option><option>CAT</option><option>Other</option></select></div>
+<div class="form-group"><label>Level</label><select id="courseLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option></select></div>
+</div>
+<div class="form-group"><label>Course Image</label><div class="file-upload-container" onclick="document.getElementById('courseImageInput').click()"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><div class="upload-text">Click to upload course image</div><div class="upload-hint">PNG, JPG up to 5MB</div><input type="file" id="courseImageInput" accept="image/*" onchange="handleImageUpload(event)"></div><div id="imagePreviewContainer" style="margin-top:0.8rem;display:none"><img id="imagePreview" style="max-width:200px;border-radius:10px"></div></div>
+<div class="form-group"><label>Description <span class="required">*</span></label><textarea id="courseDescription" rows="4"></textarea></div>
+<div class="form-row">
+<div class="form-group"><label>Instructor</label><select id="courseInstructor"><option>Dr. Kelvin M. Obieing</option><option>Jana A. Wambui</option></select></div>
+<div class="form-group"><label>Duration</label><input type="text" id="courseDuration" placeholder="e.g., 6 Weeks"></div>
+</div>
+<div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" onclick="saveBasicInfo()"><i class="fas fa-arrow-right"></i> Save & Continue</button></div>
+</div>
+<div id="step-1" class="step-content hidden">
+<div style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-credit-card" style="color:var(--gold)"></i> Payment Configuration</div>
+<div class="form-row">
+<div class="form-group"><label>Course Price ($) <span class="required">*</span></label><input type="number" id="coursePrice" step="0.01" value="0.00"></div>
+<div class="form-group"><label>Initial Payment (%)</label><input type="number" id="initialPaymentPercent" value="25"></div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:1.5rem"><button class="btn btn-outline" onclick="goToStep(0)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goToStep(2)"><i class="fas fa-arrow-right"></i> Continue</button></div>
+</div>
+<div id="step-2" class="step-content hidden">
+<div style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-layer-group" style="color:var(--gold)"></i> Course Content</div>
+<div id="modulesContainer"></div>
+<button class="btn btn-success btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Add Module</button>
+<div style="display:flex;justify-content:space-between;margin-top:1.5rem"><button class="btn btn-outline" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goToStep(3)"><i class="fas fa-arrow-right"></i> Continue</button></div>
+</div>
+<div id="step-3" class="step-content hidden">
+<div style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-pencil-alt" style="color:var(--gold)"></i> Exam & CAT</div>
+<div class="form-row">
+<div class="form-group"><label>Exam Questions</label><input type="number" id="examQuestions" value="10"></div>
+<div class="form-group"><label>Exam Pass Mark (%)</label><input type="number" id="examPassMark" value="50"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>CAT Questions</label><input type="number" id="catQuestions" value="5"></div>
+<div class="form-group"><label>CAT Pass Mark (%)</label><input type="number" id="catPassMark" value="50"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>CAT Unlock (hours after completion)</label><input type="number" id="catUnlockHours" value="24"></div>
+<div class="form-group"><label>Exam Unlock (hours after completion)</label><input type="number" id="examUnlockHours" value="72"></div>
+</div>
+<div id="examQuestionsContainer"></div>
+<button class="btn btn-success btn-sm" onclick="addExamQuestion()"><i class="fas fa-plus"></i> Add Exam Question</button>
+<div style="margin-top:0.5rem"><div id="catQuestionsContainer"></div></div>
+<button class="btn btn-success btn-sm" onclick="addCATQuestion()"><i class="fas fa-plus"></i> Add CAT Question</button>
+<div style="display:flex;justify-content:space-between;margin-top:1.5rem"><button class="btn btn-outline" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goToStep(4)"><i class="fas fa-arrow-right"></i> Continue</button></div>
+</div>
+<div id="step-4" class="step-content hidden">
+<div style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-check-circle" style="color:var(--gold)"></i> Preview & Publish</div>
+<div id="previewContent"></div>
+<div style="display:flex;justify-content:space-between;margin-top:1.5rem;flex-wrap:wrap;gap:0.5rem">
+<button class="btn btn-outline" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
+<div style="display:flex;gap:0.5rem">
+<button class="btn btn-warning" onclick="saveDraft()"><i class="fas fa-save"></i> Save Draft</button>
+<button class="btn btn-success" onclick="publishCourse()"><i class="fas fa-rocket"></i> Publish</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ADMIN EXAMS / CERTIFICATES / REVENUE / PAYMENTS / SETTINGS -->
+<div id="page-admin-exams" class="page"><h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-pencil-alt" style="color:var(--gold)"></i> Examinations</h2><div id="adminExamsList"></div></div>
+<div id="page-admin-certificates" class="page"><h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-certificate" style="color:var(--gold)"></i> Certificate Approvals</h2><div id="adminCertificatesList"></div></div>
+<div id="page-admin-revenue" class="page"><h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-chart-line" style="color:var(--gold)"></i> Revenue</h2><div id="revenueStats" class="stats-grid"></div></div>
+<div id="page-admin-payments" class="page"><h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-credit-card" style="color:var(--gold)"></i> All Payments</h2><div id="adminPaymentsList"></div></div>
+<div id="page-admin-settings" class="page"><h2 style="color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-cog" style="color:var(--gold)"></i> Settings</h2><p style="color:var(--text-secondary)">System settings will appear here.</p></div>
+
+</div>
+</div>
+
+<!-- ADD INSTRUCTOR MODAL -->
+<div class="modal-backdrop" id="addInstructorModal">
+<div class="modal-box">
+<h2><i class="fas fa-chalkboard-teacher"></i> Add Instructor</h2>
+<form onsubmit="saveInstructor(event)">
+<div class="form-row">
+<div class="form-group"><label>Full Name <span class="required">*</span></label><input type="text" id="instName" required></div>
+<div class="form-group"><label>Email <span class="required">*</span></label><input type="email" id="instEmail" required></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Phone</label><input type="tel" id="instPhone"></div>
+<div class="form-group"><label>Specialization</label><input type="text" id="instSpec"></div>
+</div>
+<div class="form-group"><label>Temporary Password <span class="required">*</span></label><input type="text" id="instPassword" required value="instructor123"></div>
+<div style="display:flex;gap:0.5rem;justify-content:flex-end">
+<button type="button" class="btn btn-outline" onclick="closeAddInstructorModal()">Cancel</button>
+<button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- APPLICATION DETAILS MODAL -->
+<div class="modal-backdrop" id="appDetailsModal">
+<div class="modal-box">
+<h2><i class="fas fa-file-alt"></i> Application Details</h2>
+<div id="appDetailsContent"></div>
+<div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1.5rem;flex-wrap:wrap">
+<button type="button" class="btn btn-outline" onclick="closeAppDetailsModal()">Close</button>
+<button type="button" class="btn btn-warning" onclick="reuploadIdFromModal()"><i class="fas fa-upload"></i> Upload New ID</button>
+<button type="button" class="btn btn-success" onclick="approveFromModal()"><i class="fas fa-check"></i> Approve</button>
+<button type="button" class="btn btn-danger" onclick="rejectFromModal()"><i class="fas fa-times"></i> Reject</button>
+</div>
+</div>
+</div>
+
+<!-- PAY COURSE MODAL -->
+<div class="modal-backdrop" id="payCourseModal">
+<div class="modal-box" style="max-width:520px">
+<h2><i class="fas fa-credit-card" style="color:var(--gold)"></i> Pay for Course</h2>
+<div id="payCourseInfo" style="margin-bottom:1.5rem;background:var(--bg);padding:1rem;border-radius:12px;font-size:0.9rem"></div>
+<form onsubmit="processCoursePayment(event)">
+<input type="hidden" id="payEnrollmentId">
+<div class="form-group">
+<label>Enter Amount You Want to Pay ($) <span class="required">*</span></label>
+<input type="number" id="payAmount" step="0.01" min="0.5" required placeholder="e.g., 5.00">
+<div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem">Minimum $0.50. Pay what you can — course access unlocks proportionally.</div>
+</div>
+<div class="form-group">
+<label>Payment Method</label>
+<select id="payMethod">
+<option value="mpesa">📱 M-Pesa</option>
+<option value="card">💳 Debit/Credit Card</option>
+<option value="bank">🏦 Bank Transfer</option>
+<option value="paypal">🌐 PayPal</option>
+</select>
+</div>
+<div style="display:flex;gap:0.5rem;justify-content:flex-end">
+<button type="button" class="btn btn-outline" onclick="closePayCourseModal()">Cancel</button>
+<button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Pay Now</button>
+</div>
+</form>
+</div>
+</div>
+
+<footer class="footer">
+<div class="container">
+<div class="brand">
+<div class="logo-bottom"><span class="nexora">NEXORA</span> <span class="academy">ACADEMY</span></div>
+<p class="tagline">LEARN · GROW · ACHIEVE</p>
+<p>Empowering learners worldwide with practical, career-focused education.</p>
+<div class="contact-buttons">
+<a href="tel:0114812308"><i class="fas fa-phone"></i> 📞 Call Us</a>
+<a href="mailto:nexo27716@gmail.com"><i class="fas fa-envelope"></i> ✉️ Email Us</a>
+</div>
+</div>
+<div><h4>Quick Links</h4><ul><li><a onclick="goHome()">Home</a></li><li><a onclick="showCoursesPublic()">Courses</a></li><li><a onclick="showVerifyPublic()">Verify Certificate</a></li><li><a onclick="showRegister()">Apply Now</a></li></ul></div>
+<div><h4>Support</h4><ul><li><a>Help Center</a></li><li><a href="mailto:nexo27716@gmail.com">Contact Us</a></li><li><a>FAQs</a></li></ul></div>
+<div><h4>Connect</h4><ul><li><a><i class="fab fa-facebook"></i> Facebook</a></li><li><a><i class="fab fa-twitter"></i> Twitter</a></li><li><a><i class="fab fa-linkedin"></i> LinkedIn</a></li><li><a><i class="fab fa-youtube"></i> YouTube</a></li></ul></div>
+<div class="bottom">&copy; 2026 <span class="gold">Nexora Academy</span>. All rights reserved. <span style="color:rgba(255,255,255,0.3)">|</span> <span style="font-size:0.8rem;color:var(--gold)">★ EXPERT ONLINE EDUCATION</span></div>
+</div>
+</footer>
+
+<script>
+/* ==================== CONSTANTS ==================== */
+const NOTIFY_EMAIL = 'nexo27716@gmail.com';
+const ACTIVATION_FEE = 0.50;
+
+/* ==================== DATABASE ==================== */
+const DB={
+    get:(k)=>JSON.parse(localStorage.getItem(k)||'[]'),
+    set:(k,d)=>localStorage.setItem(k,JSON.stringify(d)),
+    init(){
+        if(!localStorage.getItem('users')){
+            this.set('users',[
+                {id:1,username:'admin',email:'admin@nexora.com',password:'admin123',fullName:'Administrator',role:'admin',createdAt:new Date().toISOString(),activationFeePaid:true,status:'active'},
+                {id:2,username:'brian',email:'brian@nexora.com',password:'student123',fullName:'Brian Ondieki',role:'student',createdAt:new Date().toISOString(),studentId:'NXA-2026-000123',activationFeePaid:true,status:'active'}
+            ]);
+            this.set('instructors',[
+                {id:1,fullName:'Dr. Kelvin M. Obieing',email:'kelvin@nexora.com',specialization:'Academic Director',status:'active',createdAt:new Date().toISOString()},
+                {id:2,fullName:'Jana A. Wambui',email:'jana@nexora.com',specialization:'Registrar',status:'active',createdAt:new Date().toISOString()}
+            ]);
+            this.set('courses',[{
+                id:1,title:'Computer Packages',code:'NXA-CP-101',category:'IT & Technology',level:'Beginner',
+                description:'Complete training in MS Office, email, and internet basics.',instructor:'Dr. Kelvin M. Obieing',
+                duration:'3 Months',price:20.00,image:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop',
+                status:'published',
+                examQuestions:[{question:'What is Microsoft Word?',type:'multiple-choice',options:['Word processor','Browser','Operating System','Database'],correct:0,marks:2}],
+                catQuestions:[{question:'What is a computer?',type:'multiple-choice',options:['Electronic device','Animal','Plant','Mineral'],correct:0,marks:5}],
+                examPassMark:50,catPassMark:50,
+                catUnlockHours:24,examUnlockHours:72,
+                modules:[],createdAt:new Date().toISOString()
+            }]);
+            this.set('enrollments',[]);
+            this.set('certificates',[]);
+            this.set('certificateRequests',[]);
+            this.set('examResults',[]);
+            this.set('catResults',[]);
+            this.set('transactions',[]);
+            this.set('walletTransactions',[]);
+            this.set('activationFees',[]);
+            this.set('applications',[]);
+            this.set('activities',[]);
+            this.set('emailNotifications',[]);
+            this.set('groupMemberships',[]);
+        }
+    }
+};
+
+function logNotification(type,to,subject,body){
+    const logs=DB.get('emailNotifications');
+    logs.push({id:Date.now(),type,from:NOTIFY_EMAIL,to,subject,body,sentAt:new Date().toISOString(),status:'queued'});
+    DB.set('emailNotifications',logs);
+    console.log(`📧 EMAIL → From: ${NOTIFY_EMAIL} To: ${to} | ${subject}`);
+}
+function logActivity(userId,type,title,description=''){
+    const acts=DB.get('activities');
+    acts.push({id:Date.now(),userId,type,title,description,createdAt:new Date().toISOString()});
+    DB.set('activities',acts);
+}
+
+/* ==================== STATE ==================== */
+let currentUser=null,sidebarOpen=false,currentStep=0;
+let examQuestions=[],catQuestions=[];
+let uploadedImageData=null,uploadedIdData=null;
+let pendingRegUser=null,editingCourseId=null;
+let currentAppView=null;
+
+let courseData={
+    id:null,title:'',code:'',category:'IT & Technology',level:'Beginner',
+    description:'',image:'',instructor:'Dr. Kelvin M. Obieing',duration:'',
+    price:0,initialPaymentPercent:25,modules:[],
+    examQuestions:[],catQuestions:[],
+    examPassMark:50,catPassMark:50,
+    catUnlockHours:24,examUnlockHours:72,
+    status:'draft'
+};
+
+DB.init();checkAuth();
+
+function genStudentId(){const y=String(new Date().getFullYear()).slice(-2);const s=DB.get('users').filter(u=>u.role==='student'&&u.studentId);return`NXA-${y}-${String(s.length+1).padStart(5,'0')}`;}
+function genAppId(){const y=new Date().getFullYear();return`NXA-APP-${y}-${String(DB.get('applications').length+1).padStart(5,'0')}`;}
+function genTxId(){const y=new Date().getFullYear();return`NXA-TXN-${y}-${String(DB.get('transactions').length+1).padStart(5,'0')}`;}
+function genWalletTxId(){const y=new Date().getFullYear();return`NXA-WLT-${y}-${String(DB.get('walletTransactions').length+1).padStart(5,'0')}`;}
+function genCertId(code){const y=new Date().getFullYear();const c=DB.get('certificates');return`NXA-${code||'CRS'}-${y}-${String(c.length+1).padStart(6,'0')}`;}
+function esc(s){return(s||'').toString().replace(/[<>]/g,'');}
+function showFlash(id,msg,type='info'){const c=document.getElementById(id);if(c){c.innerHTML=`<div class="flash flash-${type}">${msg}</div>`;setTimeout(()=>c.innerHTML='',5000);}}
+function fmtMoney(n){return '$'+parseFloat(n||0).toFixed(2);}
+
+/* ==================== AUTH ==================== */
+function checkAuth(){const u=localStorage.getItem('currentUser');if(u){currentUser=JSON.parse(u);showApp();}else{goHome();}}
+function loginUser(e){
+    e.preventDefault();
+    const email=document.getElementById('loginEmail').value,password=document.getElementById('loginPassword').value;
+    const user=DB.get('users').find(u=>u.email===email&&u.password===password);
+    if(!user){showFlash('loginFlash','❌ Invalid email or password','danger');return;}
+    if(user.role==='instructor'&&user.status!=='active'){showFlash('loginFlash','🚫 Account suspended. Contact admin.','danger');return;}
+    localStorage.setItem('currentUser',JSON.stringify(user));currentUser=user;showApp();
+}
+function logout(){localStorage.removeItem('currentUser');currentUser=null;closeSidebar();goHome();}
+
+/* ==================== NAV ==================== */
+function goHome(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-landing').classList.add('active');document.getElementById('sidebarToggleBar').classList.remove('visible');document.getElementById('mainContent').classList.remove('sidebar-open');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('active');updateTopNav();window.scrollTo({top:0,behavior:'smooth'});}
+function showCoursesPublic(){if(currentUser){navigateTo(currentUser.role==='admin'?'admin-courses':'student-courses');return;}document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-courses').classList.add('active');document.getElementById('sidebarToggleBar').classList.remove('visible');renderPublicCourses();updateTopNav();}
+function showVerifyPublic(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-verify').classList.add('active');document.getElementById('sidebarToggleBar').classList.remove('visible');document.getElementById('verifyResult').innerHTML='';document.getElementById('verifyToken').value='';updateTopNav();}
+function showLogin(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-login').classList.add('active');document.getElementById('sidebarToggleBar').classList.remove('visible');updateTopNav();}
+function showRegister(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-register').classList.add('active');document.getElementById('sidebarToggleBar').classList.remove('visible');regGoToStep(1);updateTopNav();}
+function updateTopNav(){if(currentUser){document.getElementById('topAuthLinks').classList.add('hidden');document.getElementById('topUserLinks').classList.remove('hidden');document.getElementById('topUserAvatar').textContent=currentUser.fullName.charAt(0).toUpperCase();document.getElementById('topUserName').textContent=currentUser.fullName.split(' ')[0];}else{document.getElementById('topAuthLinks').classList.remove('hidden');document.getElementById('topUserLinks').classList.add('hidden');}}
+function showApp(){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('sidebarToggleBar').classList.add('visible');
+    if(currentUser.role==='admin'){
+        document.getElementById('adminMenu').classList.remove('hidden');
+        document.getElementById('studentMenu').classList.add('hidden');
+        document.getElementById('page-admin-dashboard').classList.add('active');
+        document.getElementById('pageIndicator').textContent='Admin Dashboard';
+        updateAdminDashboard();
+    }else{
+        document.getElementById('adminMenu').classList.add('hidden');
+        document.getElementById('studentMenu').classList.remove('hidden');
+        document.getElementById('page-student-dashboard').classList.add('active');
+        document.getElementById('pageIndicator').textContent='Student Dashboard';
+        updateStudentDashboard();
+    }
+    updateSidebarActive('dashboard');
+    updateTopNav();
+    updateCounts();
+}
+function toggleSidebar(){sidebarOpen=!sidebarOpen;const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');if(sidebarOpen){s.classList.add('open');o.classList.add('active');if(window.innerWidth>768)document.getElementById('mainContent').classList.add('sidebar-open');document.getElementById('sidebarToggleLabel').textContent='CLOSE';}else{s.classList.remove('open');o.classList.remove('active');document.getElementById('mainContent').classList.remove('sidebar-open');document.getElementById('sidebarToggleLabel').textContent='MENU';}}
+function closeSidebar(){sidebarOpen=false;document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('active');document.getElementById('mainContent').classList.remove('sidebar-open');document.getElementById('sidebarToggleLabel').textContent='MENU';}
+function updateSidebarActive(page){document.querySelectorAll('.sidebar-menu .menu-item').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.sidebar-menu .menu-item').forEach(el=>{if(el.onclick&&el.onclick.toString().includes(`'${page}'`))el.classList.add('active');});}
+function navigateTo(page){
+    if(!currentUser){showLogin();return;}
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const t=document.getElementById(`page-${page}`);if(t)t.classList.add('active');
+    const names={'admin-dashboard':'Admin Dashboard','admin-students':'Students','admin-student-detail':'Student Details','admin-applications':'Applications','admin-instructors':'Instructors','admin-courses':'All Courses','admin-builder':'Add New Course','admin-exams':'Examinations','admin-certificates':'Certificates','admin-revenue':'Revenue','admin-payments':'Payments','admin-settings':'Settings','student-dashboard':'Dashboard','student-wallet':'Wallet & Payments','student-courses':'My Courses','student-results':'My Results','student-exams':'Exams & CATs','student-certificates':'My Certificates','student-profile':'Profile'};
+    document.getElementById('pageIndicator').textContent=names[page]||page;
+    updateSidebarActive(page);
+    if(window.innerWidth<=768)closeSidebar();
+    if(page==='admin-dashboard')updateAdminDashboard();
+    if(page==='admin-students')renderAdminStudents();
+    if(page==='admin-applications')renderAdminApplications();
+    if(page==='admin-instructors')renderAdminInstructors();
+    if(page==='admin-courses')renderAdminCourses();
+    if(page==='admin-builder')initBuilder();
+    if(page==='admin-exams')renderAdminExams();
+    if(page==='admin-certificates')renderAdminCertificates();
+    if(page==='admin-revenue')renderRevenue();
+    if(page==='admin-payments')renderAdminPayments();
+    if(page==='student-dashboard')updateStudentDashboard();
+    if(page==='student-wallet')renderStudentWallet();
+    if(page==='student-courses')renderStudentCourses();
+    if(page==='student-results')renderStudentResults();
+    if(page==='student-exams')renderStudentExams();
+    if(page==='student-certificates')renderStudentCertificates();
+    if(page==='student-profile')renderStudentProfile();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateCounts(){
+    const students=DB.get('users').filter(u=>u.role==='student'),courses=DB.get('courses');
+    const apps=DB.get('applications').filter(a=>a.status==='pending'),insts=DB.get('instructors');
+    const sEl=document.getElementById('studentCount');if(sEl)sEl.textContent=students.length;
+    const cEl=document.getElementById('courseCount');if(cEl)cEl.textContent=courses.length;
+    const aEl=document.getElementById('appCount');if(aEl)aEl.textContent=apps.length;
+    const iEl=document.getElementById('instructorCount');if(iEl)iEl.textContent=insts.length;
+    const eEl=document.getElementById('studentEnrollCount');if(eEl&&currentUser)eEl.textContent=DB.get('enrollments').filter(e=>e.userId===currentUser.id).length;
+}
+
+/* ==================== PUBLIC COURSES ==================== */
+function renderPublicCourses(){
+    const cs=DB.get('courses').filter(c=>c.status==='published'),c=document.getElementById('allCoursesList');
+    if(cs.length===0){c.innerHTML='<p style="color:var(--text-secondary);grid-column:1/-1;text-align:center;padding:2rem">No courses available.</p>';return;}
+    c.innerHTML=cs.map(course=>`<div class="course-card"><div class="course-image">${course.image?`<img src="${course.image}" style="width:100%;height:100%;object-fit:cover">`:''}</div><div class="course-body"><h3 class="course-title">${esc(course.title)}</h3><div class="course-meta"><span><i class="fas fa-user-tie"></i> ${esc(course.instructor)}</span><span><i class="fas fa-clock"></i> ${esc(course.duration)}</span></div><p style="color:var(--text-secondary);font-size:0.9rem;margin:0.5rem 0">${esc(course.description||'').substring(0,100)}...</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.8rem"><span style="font-weight:700;color:var(--gold);font-size:1.1rem">${fmtMoney(course.price)}</span><button class="btn btn-primary btn-sm" onclick="showRegister()">Enroll</button></div></div></div>`).join('');
+}
+
+/* ==================== REGISTER ==================== */
+function regGoToStep(n){document.querySelectorAll('.reg-step').forEach(el=>el.classList.remove('active'));const s=document.getElementById('reg-step-'+n);if(s)s.classList.add('active');document.querySelectorAll('#regStepIndicator .si').forEach(el=>{const i=parseInt(el.dataset.s);el.classList.remove('active','done');if(i<n)el.classList.add('done');if(i===n)el.classList.add('active');});window.scrollTo({top:0,behavior:'smooth'});}
+function regGoBack(n){regGoToStep(n);}
+function regStep1(e){
+    e.preventDefault();
+    const users=DB.get('users');
+    const email=document.getElementById('regEmail').value;
+    if(users.find(u=>u.email===email)){showFlash('registerFlash','❌ Email already registered','danger');return;}
+    const username=document.getElementById('regUsername').value;
+    if(users.find(u=>u.username===username)){showFlash('registerFlash','❌ Username already taken','danger');return;}
+    pendingRegUser={id:Date.now(),username,email,password:document.getElementById('regPassword').value,fullName:document.getElementById('regFullName').value,phone:document.getElementById('regPhone').value,dob:document.getElementById('regDob').value,country:document.getElementById('regCountry').value,role:document.getElementById('regRole').value,createdAt:new Date().toISOString(),studentId:document.getElementById('regRole').value==='student'?genStudentId():null,admissionStatus:'pending',activationFeePaid:false,status:'active',nationalIdImage:''};
+    showFlash('registerFlash','✅ Personal details saved.','success');
+    regGoToStep(2);
+}
+function handleIdUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{uploadedIdData=ev.target.result;document.getElementById('idPreview').src=uploadedIdData;document.getElementById('idPreviewContainer').style.display='block';};r.readAsDataURL(f);}
+function regStep2(){
+    if(!pendingRegUser){showFlash('registerFlash','⚠️ Complete step 1.','warning');regGoToStep(1);return;}
+    if(!uploadedIdData){showFlash('registerFlash','⚠️ Upload your national ID.','warning');return;}
+    const users=DB.get('users');
+    if(users.find(u=>u.email===pendingRegUser.email)){showFlash('registerFlash','❌ Email already registered.','danger');return;}
+    pendingRegUser.nationalIdImage=uploadedIdData;
+    users.push(pendingRegUser);DB.set('users',users);
+    const apps=DB.get('applications');
+    const appId=genAppId();
+    apps.push({id:Date.now(),applicationId:appId,userId:pendingRegUser.id,fullName:pendingRegUser.fullName,email:pendingRegUser.email,phone:pendingRegUser.phone,dob:pendingRegUser.dob,country:pendingRegUser.country,nationalIdImage:uploadedIdData,status:'pending',createdAt:new Date().toISOString()});
+    DB.set('applications',apps);
+    logNotification('application_received',pendingRegUser.email,'Application Received - Nexora Academy','Thank you for applying. Your application is pending admin review.');
+    logNotification('admin_new_application',NOTIFY_EMAIL,'New Student Application','New application received from '+pendingRegUser.fullName);
+    logActivity(pendingRegUser.id,'account','Account Created','Registered as '+pendingRegUser.role);
+    document.getElementById('regAppId').textContent=appId;
+    document.getElementById('regPendingEmail').textContent=pendingRegUser.email;
+    updateCounts();
+    regGoToStep(3);
+}
+function regCheckStatus(){
+    if(!pendingRegUser){showFlash('registerFlash','Restart.','danger');return;}
+    const u=DB.get('users').find(x=>x.id===pendingRegUser.id);
+    if(!u)return;
+    if(u.admissionStatus==='approved_waiting_fee'){regGoToStep(4);}
+    else if(u.admissionStatus==='rejected'){showFlash('registerFlash','❌ Application rejected.','danger');}
+    else if(u.activationFeePaid){localStorage.setItem('currentUser',JSON.stringify(u));currentUser=u;showApp();}
+    else{showFlash('registerFlash','⏳ Still pending. Wait for admin approval.','warning');}
+}
+function payActivationFee(){
+    if(!pendingRegUser){showFlash('feeFlash','Restart.','danger');return;}
+    const users=DB.get('users');const u=users.find(x=>x.id===pendingRegUser.id);if(!u)return;
+    const txs=DB.get('transactions');
+    const txId=genTxId();
+    txs.push({id:Date.now(),transactionId:txId,studentId:u.id,studentEmail:u.email,paymentType:'ACTIVATION_FEE',amount:ACTIVATION_FEE,currency:'USD',status:'pending',createdAt:new Date().toISOString()});
+    DB.set('transactions',txs);
+    showFlash('feeFlash','<i class="fas fa-spinner fa-spin"></i> Processing...','info');
+    setTimeout(()=>{
+        const txs2=DB.get('transactions');
+        const tx=txs2.find(t=>t.id===txs[txs.length-1].id);
+        if(tx){tx.status='completed';tx.verifiedAt=new Date().toISOString();}
+        DB.set('transactions',txs2);
+        const afs=DB.get('activationFees');
+        afs.push({id:Date.now(),userId:u.id,amount:ACTIVATION_FEE,status:'paid',paidAt:new Date().toISOString()});
+        DB.set('activationFees',afs);
+        const users2=DB.get('users');
+        const user=users2.find(x=>x.id===u.id);
+        if(user){user.activationFeePaid=true;user.admissionStatus='activated';}
+        DB.set('users',users2);
+        logNotification('activation_confirmed',u.email,'Account Activated - Nexora Academy','Your account is now active. Log in and start learning!');
+        logActivity(u.id,'payment','Activation Fee Paid',fmtMoney(ACTIVATION_FEE));
+        localStorage.setItem('currentUser',JSON.stringify(user));
+        currentUser=user;
+        showFlash('feeFlash','✅ Payment successful! Redirecting...','success');
+        setTimeout(()=>showApp(),1500);
+    },2000);
+}
+
+/* ==================== CERTIFICATE RENDER ==================== */
+function renderCertificateHTML(cert){
+    const issued=new Date(cert.issuedDate);
+    const dateStr=issued.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+    const qrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cert.certificateId+'|'+cert.verificationToken)}`;
+    return `
+    <div class="cert-stage"><div class="cert">
+        <div class="cert-inner-frame"></div>
+        <div class="cert-id-box"><div class="lbl">CERTIFICATE ID:</div><div class="num">${esc(cert.certificateId)}</div></div>
+        <div class="cert-content">
+            <div class="cert-logo-row">
+                <div class="cert-crest"><i class="fas fa-book-reader"></i></div>
+                <div class="cert-logo-text">
+                    <div class="name">NEXORA</div>
+                    <div class="sub">ACADEMY</div>
+                    <div class="tag">LEARN · GROW · ACHIEVE</div>
+                </div>
+            </div>
+            <div class="cert-title-main">CERTIFICATE</div>
+            <div class="cert-title-sub">OF COURSE COMPLETION</div>
+            <div class="cert-title-line"><span class="diamond"></span></div>
+            <div class="cert-certify">This is to certify that</div>
+            <div class="cert-student-name">${esc(cert.studentName)}</div>
+            <div class="cert-name-line"></div>
+            <div class="cert-body-text">has successfully completed all the academic and graduation requirements for the course</div>
+            <div class="cert-course-name">${esc(cert.courseName)}</div>
+            <div class="cert-bottom-row">
+                <div class="cert-requirements">
+                    <div class="req-line"><span class="chk"><i class="fas fa-check"></i></span> Completed 100% of the course content</div>
+                    <div class="req-line"><span class="chk"><i class="fas fa-check"></i></span> Met the required attendance</div>
+                    <div class="req-line"><span class="chk"><i class="fas fa-check"></i></span> Completed all assignments</div>
+                    <div class="req-line"><span class="chk"><i class="fas fa-check"></i></span> Passed all required assessments</div>
+                    <div class="req-line"><span class="chk"><i class="fas fa-check"></i></span> Completed full course payment</div>
+                </div>
+                <div class="cert-qr">
+                    <div class="qr-title">VERIFY CERTIFICATE</div>
+                    <div class="qr-box"><img src="${qrUrl}" style="width:100%;height:100%" alt="QR"></div>
+                    <div class="qr-caption">Scan QR Code to Verify<br>or visit:<br><strong style="color:var(--navy)">https://nexoraacademy.com/verify</strong></div>
+                </div>
+            </div>
+            <div class="cert-signature-row">
+                <div class="cert-sig"><div class="sig-script">Dr. Kelvin M. Obieing</div><div class="sig-line"></div><div class="sig-role">ACADEMIC DIRECTOR</div></div>
+                <div><div class="cert-seal"><div class="cert-seal-inner"><i class="fas fa-graduation-cap"></i><div class="txt">NEXORA<br>ACADEMY<br>OFFICIAL SEAL</div></div></div></div>
+                <div class="cert-sig"><div class="sig-script">Jane A. Wambui</div><div class="sig-line"></div><div class="sig-role">REGISTRAR</div></div>
+            </div>
+            <div class="cert-footer-note">This certificate is issued electronically and is valid without a signature.</div>
+        </div>
+    </div></div>`;
+}
+function verifyCertificate(){
+    const token=document.getElementById('verifyToken').value.trim();
+    const cert=DB.get('certificates').find(c=>c.certificateId===token||c.verificationToken===token);
+    const r=document.getElementById('verifyResult');
+    if(cert){
+        r.innerHTML=renderCertificateHTML(cert)+`<div style="text-align:center;margin:1rem 0 3rem"><span class="badge badge-success" style="padding:8px 24px;font-size:0.9rem">✅ VERIFIED AUTHENTIC</span><div style="margin-top:1rem"><button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print</button></div></div>`;
+    }else{
+        r.innerHTML=`<div class="flash flash-danger" style="max-width:600px;margin:1rem auto"><h3>❌ Invalid Certificate</h3><p>No certificate found.</p></div>`;
+    }
+}
+
+/* ==================== COURSE PAYMENT HELPERS ==================== */
+function getCoursePayments(userId,courseId){
+    return DB.get('transactions').filter(t=>t.studentId===userId&&t.courseId===courseId&&t.paymentType==='COURSE_PAYMENT'&&t.status==='completed');
+}
+function getTotalPaid(userId,courseId){
+    return getCoursePayments(userId,courseId).reduce((s,t)=>s+t.amount,0);
+}
+function getPaymentStatus(userId,courseId){
+    const course=DB.get('courses').find(c=>c.id===courseId);
+    if(!course)return 'unpaid';
+    const paid=getTotalPaid(userId,courseId);
+    if(paid<=0)return 'unpaid';
+    if(paid>=course.price)return 'paid';
+    return 'partial';
+}
+function getPaymentProgress(userId,courseId){
+    const course=DB.get('courses').find(c=>c.id===courseId);if(!course)return 0;
+    const paid=getTotalPaid(userId,courseId);
+    return Math.min(100,Math.round((paid/course.price)*100));
+}
+
+/* ==================== STUDENT DASHBOARD ==================== */
+function updateStudentDashboard(){
+    if(!currentUser)return;
+    const enr=DB.get('enrollments').filter(e=>e.userId===currentUser.id);
+    const certs=DB.get('certificates').filter(c=>c.studentName===currentUser.fullName);
+    const walletTxs=DB.get('walletTransactions').filter(t=>t.userId===currentUser.id);
+    const totalPaidOnCourses=enr.reduce((s,e)=>s+getTotalPaid(currentUser.id,e.courseId),0);
+    document.getElementById('studentDashboardContent').innerHTML=`
+        <div class="wallet-hero">
+            <h2>Welcome back, ${esc(currentUser.fullName)}!</h2>
+            <p>Student ID: ${esc(currentUser.studentId||'N/A')} • Activation: ${currentUser.activationFeePaid?'✅ Active':'⏳ Pending'}</p>
+            <div class="balances">
+                <div class="bal-box"><div class="lbl">Courses Enrolled</div><div class="val">${enr.length}</div></div>
+                <div class="bal-box"><div class="lbl">Total Paid (Courses)</div><div class="val green">${fmtMoney(totalPaidOnCourses)}</div></div>
+                <div class="bal-box"><div class="lbl">Certificates</div><div class="val">${certs.length}</div></div>
+                <div class="bal-box"><div class="lbl">Transactions</div><div class="val">${walletTxs.length}</div></div>
+            </div>
+        </div>
+        <h3 style="color:var(--navy);margin:1.5rem 0 1rem">My Enrolled Courses</h3>
+        ${enr.length===0?'<p style="color:var(--text-secondary)">You have not enrolled in any courses yet. <a onclick="navigateTo(\'student-courses\')" style="color:var(--blue);cursor:pointer;font-weight:600">Browse Courses</a></p>':
+        enr.map(e=>{
+            const course=DB.get('courses').find(c=>c.id===e.courseId);if(!course)return '';
+            const paid=getTotalPaid(currentUser.id,course.id);
+            const remaining=Math.max(0,course.price-paid);
+            const progress=getPaymentProgress(currentUser.id,course.id);
+            const pstatus=getPaymentStatus(currentUser.id,course.id);
+            return `<div class="enrolled-card">
+                <h4>${esc(course.title)} <span style="font-size:0.8rem;color:var(--text-secondary);font-weight:normal">(${esc(course.code||'N/A')})</span></h4>
+                <div class="meta">${esc(course.instructor)} • ${esc(course.duration)}</div>
+                <div class="stats-line">
+                    <div class="stat-box"><div class="lbl">Course Fee</div><div class="val">${fmtMoney(course.price)}</div></div>
+                    <div class="stat-box"><div class="lbl">Paid</div><div class="val" style="color:var(--success)">${fmtMoney(paid)}</div></div>
+                    <div class="stat-box"><div class="lbl">Remaining</div><div class="val" style="color:${remaining>0?'var(--danger)':'var(--success)'}">${fmtMoney(remaining)}</div></div>
+                    <div class="stat-box"><div class="lbl">Status</div><div class="val"><span class="badge badge-${pstatus}">${pstatus==='paid'?'PAID IN FULL':pstatus==='partial'?'PARTIAL':'UNPAID'}</span></div></div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+                <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.8rem">Payment Progress: ${progress}% • Course Access: ${progress}%</div>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                    ${remaining>0?`<button class="btn btn-success btn-sm" onclick="openPayCourseModal(${e.id})"><i class="fas fa-credit-card"></i> Pay Now</button>`:
+                    '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Fully Paid</span>'}
+                    <button class="btn btn-outline btn-sm" onclick="navigateTo('student-wallet')"><i class="fas fa-wallet"></i> Wallet</button>
+                </div>
+            </div>`;
+        }).join('')}
+    `;
+}
+
+/* ==================== STUDENT WALLET ==================== */
+function renderStudentWallet(){
+    if(!currentUser)return;
+    const enr=DB.get('enrollments').filter(e=>e.userId===currentUser.id);
+    const txs=DB.get('transactions').filter(t=>t.studentId===currentUser.id).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const totalPaidOnCourses=enr.reduce((s,e)=>s+getTotalPaid(currentUser.id,e.courseId),0);
+    const totalCourseFees=enr.reduce((s,e)=>{const c=DB.get('courses').find(x=>x.id===e.courseId);return s+(c?c.price:0);},0);
+    const totalRemaining=Math.max(0,totalCourseFees-totalPaidOnCourses);
+    const activationTx=txs.filter(t=>t.paymentType==='ACTIVATION_FEE'&&t.status==='completed');
+    document.getElementById('studentWalletContent').innerHTML=`
+        <div class="wallet-hero">
+            <h2>Wallet Overview</h2>
+            <p>Track your course payments and activation fee.</p>
+            <div class="balances">
+                <div class="bal-box"><div class="lbl">Total Course Fees</div><div class="val">${fmtMoney(totalCourseFees)}</div></div>
+                <div class="bal-box"><div class="lbl">Total Paid (Courses)</div><div class="val green">${fmtMoney(totalPaidOnCourses)}</div></div>
+                <div class="bal-box"><div class="lbl">Remaining Balance</div><div class="val red">${fmtMoney(totalRemaining)}</div></div>
+                <div class="bal-box"><div class="lbl">Activation Fee</div><div class="val">${activationTx.length>0?'✅ Paid':'⏳ Pending'}</div></div>
+            </div>
+        </div>
+
+        <h3 style="color:var(--navy);margin:1.5rem 0 1rem">My Enrolled Courses — Payment Details</h3>
+        ${enr.length===0?'<p style="color:var(--text-secondary)">You have not enrolled in any courses yet.</p>':
+        enr.map(e=>{
+            const course=DB.get('courses').find(c=>c.id===e.courseId);if(!course)return '';
+            const paid=getTotalPaid(currentUser.id,course.id);
+            const remaining=Math.max(0,course.price-paid);
+            const progress=getPaymentProgress(currentUser.id,course.id);
+            const pstatus=getPaymentStatus(currentUser.id,course.id);
+            const courseTxs=getCoursePayments(currentUser.id,course.id).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+            return `<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem;border-left:4px solid var(--gold)">
+                <h4 style="color:var(--navy)">${esc(course.title)} <span style="font-size:0.8rem;color:var(--text-secondary);font-weight:normal">(${esc(course.code||'N/A')})</span></h4>
+                <div class="stats-line">
+                    <div class="stat-box"><div class="lbl">Course Fee</div><div class="val">${fmtMoney(course.price)}</div></div>
+                    <div class="stat-box"><div class="lbl">Amount Paid</div><div class="val" style="color:var(--success)">${fmtMoney(paid)}</div></div>
+                    <div class="stat-box"><div class="lbl">Remaining</div><div class="val" style="color:${remaining>0?'var(--danger)':'var(--success)'}">${fmtMoney(remaining)}</div></div>
+                    <div class="stat-box"><div class="lbl">Status</div><div class="val"><span class="badge badge-${pstatus}">${pstatus.toUpperCase()}</span></div></div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+                <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.8rem">Payment Progress: ${progress}% • Course Access: ${progress}%</div>
+                ${remaining>0?`<button class="btn btn-success btn-sm" onclick="openPayCourseModal(${e.id})"><i class="fas fa-credit-card"></i> Pay Now</button>`:'<span class="badge badge-success"><i class="fas fa-check-circle"></i> Fully Paid</span>'}
+                <div style="margin-top:1rem;font-size:0.85rem"><strong>Payment History for this Course:</strong></div>
+                ${courseTxs.length===0?'<p style="color:var(--text-secondary);font-size:0.85rem">No payments yet.</p>':
+                `<table style="margin-top:0.5rem"><thead><tr><th>Tx ID</th><th>Method</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead><tbody>${courseTxs.map(t=>`<tr><td>${esc(t.transactionId)}</td><td>${esc(t.paymentMethod||'—')}</td><td>${fmtMoney(t.amount)}</td><td>${new Date(t.createdAt).toLocaleDateString()}</td><td><span class="badge badge-success">${t.status}</span></td></tr>`).join('')}</tbody></table>`}
+            </div>`;
+        }).join('')}
+
+        <h3 style="color:var(--navy);margin:1.5rem 0 1rem">All Transactions</h3>
+        ${txs.length===0?'<p style="color:var(--text-secondary)">No transactions yet.</p>':
+        `<div class="table-wrapper"><table><thead><tr><th>Transaction ID</th><th>Type</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
+            ${txs.map(t=>{
+                const course=t.courseId?DB.get('courses').find(c=>c.id===t.courseId):null;
+                return `<tr>
+                    <td><strong>${esc(t.transactionId)}</strong></td>
+                    <td>${t.paymentType==='ACTIVATION_FEE'?'🔓 Activation Fee':`📚 ${esc(course?course.title:'Course')}`}</td>
+                    <td>${esc(t.paymentMethod||'—')}</td>
+                    <td><strong>${fmtMoney(t.amount)}</strong></td>
+                    <td><span class="badge badge-${t.status==='completed'?'success':'warning'}">${t.status}</span></td>
+                    <td>${new Date(t.createdAt).toLocaleString()}</td>
+                </tr>`;
+            }).join('')}
+        </tbody></table></div>`}
+    `;
+}
+
+/* ==================== OPEN PAY COURSE MODAL ==================== */
+function openPayCourseModal(enrollmentId){
+    const e=DB.get('enrollments').find(x=>x.id===enrollmentId);if(!e)return;
+    const course=DB.get('courses').find(c=>c.id===e.courseId);if(!course)return;
+    const paid=getTotalPaid(currentUser.id,course.id);
+    const remaining=Math.max(0,course.price-paid);
+    document.getElementById('payEnrollmentId').value=enrollmentId;
+    document.getElementById('payCourseInfo').innerHTML=`
+        <div style="font-weight:700;color:var(--navy);margin-bottom:0.5rem">${esc(course.title)}</div>
+        <div>Course Fee: <strong>${fmtMoney(course.price)}</strong></div>
+        <div>Already Paid: <strong style="color:var(--success)">${fmtMoney(paid)}</strong></div>
+        <div>Remaining: <strong style="color:var(--danger)">${fmtMoney(remaining)}</strong></div>
+    `;
+    document.getElementById('payAmount').value='';
+    document.getElementById('payAmount').max=remaining;
+    document.getElementById('payCourseModal').classList.add('active');
+}
+function closePayCourseModal(){document.getElementById('payCourseModal').classList.remove('active');}
+function processCoursePayment(ev){
+    ev.preventDefault();
+    if(!currentUser){return;}
+    const enrollmentId=parseInt(document.getElementById('payEnrollmentId').value);
+    const e=DB.get('enrollments').find(x=>x.id===enrollmentId);if(!e)return;
+    const course=DB.get('courses').find(c=>c.id===e.courseId);if(!course)return;
+    const amount=parseFloat(document.getElementById('payAmount').value);
+    const method=document.getElementById('payMethod').value;
+    const paid=getTotalPaid(currentUser.id,course.id);
+    const remaining=Math.max(0,course.price-paid);
+    if(isNaN(amount)||amount<=0){alert('⚠️ Enter a valid amount.');return;}
+    if(amount<0.5){alert('⚠️ Minimum payment is $0.50.');return;}
+    if(amount>remaining){alert('⚠️ Amount exceeds remaining balance of '+fmtMoney(remaining));return;}
+
+    const txs=DB.get('transactions');
+    const txId=genTxId();
+    const tx={id:Date.now(),transactionId:txId,studentId:currentUser.id,studentEmail:currentUser.email,courseId:course.id,paymentType:'COURSE_PAYMENT',amount,currency:'USD',paymentMethod:method,status:'pending',createdAt:new Date().toISOString()};
+    txs.push(tx);DB.set('transactions',txs);
+
+    const wtxs=DB.get('walletTransactions');
+    wtxs.push({id:Date.now(),walletTxId:genWalletTxId(),userId:currentUser.id,transactionId:txId,type:'debit',amount,description:'Course payment: '+course.title,status:'pending',createdAt:new Date().toISOString()});
+    DB.set('walletTransactions',wtxs);
+
+    closePayCourseModal();
+    alert('⏳ Processing payment...');
+    setTimeout(()=>{
+        const txs2=DB.get('transactions');
+        const t=txs2.find(x=>x.id===tx.id);
+        if(t){t.status='completed';t.verifiedAt=new Date().toISOString();}
+        DB.set('transactions',txs2);
+        const wtxs2=DB.get('walletTransactions');
+        const w=wtxs2.find(x=>x.transactionId===txId);
+        if(w)w.status='completed';
+        DB.set('walletTransactions',wtxs2);
+
+        const newPaid=paid+amount;
+        const newPct=Math.min(100,Math.round((newPaid/course.price)*100));
+        logNotification('course_payment_received',currentUser.email,'Course Payment Received - Nexora Academy','We received '+fmtMoney(amount)+' for '+course.title+'. Total paid: '+fmtMoney(newPaid)+'. Remaining: '+fmtMoney(Math.max(0,course.price-newPaid))+'.');
+        logNotification('admin_course_payment',NOTIFY_EMAIL,'Course Payment','Student '+currentUser.fullName+' paid '+fmtMoney(amount)+' for '+course.title);
+        logActivity(currentUser.id,'payment','Course Payment',fmtMoney(amount)+' for '+course.title);
+
+        alert('✅ Payment successful!\nPaid: '+fmtMoney(amount)+'\nCourse Access Unlocked: '+newPct+'%');
+        updateStudentDashboard();
+        renderStudentWallet();
+        updateCounts();
+    },1800);
+}
+
+/* ==================== STUDENT COURSES ==================== */
+function renderStudentCourses(){
+    const enr=DB.get('enrollments').filter(e=>e.userId===currentUser.id);
+    const courses=DB.get('courses');
+    const c=document.getElementById('studentCoursesList');
+    // Also show courses available to enroll in
+    const enrolledIds=enr.map(e=>e.courseId);
+    const available=courses.filter(x=>x.status==='published'&&!enrolledIds.includes(x.id));
+    c.innerHTML=`
+        <h3 style="color:var(--navy);margin-bottom:1rem;grid-column:1/-1">Enrolled Courses</h3>
+        ${enr.length===0?'<p style="color:var(--text-secondary);grid-column:1/-1">You have not enrolled in any course yet.</p>':
+        enr.map(e=>{
+            const course=courses.find(x=>x.id===e.courseId);if(!course)return '';
+            const paid=getTotalPaid(currentUser.id,course.id);
+            const remaining=Math.max(0,course.price-paid);
+            const progress=getPaymentProgress(currentUser.id,course.id);
+            const pstatus=getPaymentStatus(currentUser.id,course.id);
+            return `<div class="enrolled-card">
+                <h4>${esc(course.title)}</h4>
+                <div class="meta"><i class="fas fa-tag"></i> ${esc(course.code||'N/A')} • <i class="fas fa-user-tie"></i> ${esc(course.instructor)}</div>
+                <div class="stats-line">
+                    <div class="stat-box"><div class="lbl">Course Fee</div><div class="val">${fmtMoney(course.price)}</div></div>
+                    <div class="stat-box"><div class="lbl">Paid</div><div class="val" style="color:var(--success)">${fmtMoney(paid)}</div></div>
+                    <div class="stat-box"><div class="lbl">Remaining</div><div class="val" style="color:${remaining>0?'var(--danger)':'var(--success)'}">${fmtMoney(remaining)}</div></div>
+                    <div class="stat-box"><div class="lbl">Access</div><div class="val">${progress}%</div></div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+                ${remaining>0?`<button class="btn btn-success btn-sm" onclick="openPayCourseModal(${e.id})"><i class="fas fa-credit-card"></i> Pay Now</button>`:'<span class="badge badge-success">✅ Fully Paid</span>'}
+            </div>`;
+        }).join('')}
+        <h3 style="color:var(--navy);margin:2rem 0 1rem;grid-column:1/-1">Available Courses</h3>
+        ${available.length===0?'<p style="color:var(--text-secondary);grid-column:1/-1">No new courses available.</p>':
+        available.map(course=>`<div class="course-card"><div class="course-image">${course.image?`<img src="${course.image}" style="width:100%;height:100%;object-fit:cover">`:''}</div><div class="course-body"><h3 class="course-title">${esc(course.title)}</h3><div class="course-meta"><span><i class="fas fa-user-tie"></i> ${esc(course.instructor)}</span></div><p style="color:var(--text-secondary);font-size:0.9rem">${esc(course.description||'').substring(0,100)}...</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.8rem"><span style="font-weight:700;color:var(--gold)">${fmtMoney(course.price)}</span><button class="btn btn-primary btn-sm" onclick="enrollInCourse(${course.id})">Enroll</button></div></div></div>`).join('')}
+    `;
+}
+function enrollInCourse(courseId){
+    if(!currentUser)return;
+    const enr=DB.get('enrollments');
+    if(enr.find(e=>e.userId===currentUser.id&&e.courseId===courseId)){alert('Already enrolled.');return;}
+    enr.push({id:Date.now(),userId:currentUser.id,courseId,enrolledAt:new Date().toISOString(),progress:0,completed:false});
+    DB.set('enrollments',enr);
+    const course=DB.get('courses').find(c=>c.id===courseId);
+    logNotification('enrollment_confirmed',currentUser.email,'Enrollment Confirmed - '+course.title,'You are now enrolled in '+course.title+'. Total fee: '+fmtMoney(course.price)+'. Pay what you can to unlock content.');
+    logActivity(currentUser.id,'enrollment','Enrolled in course',course.title);
+    alert('✅ Enrolled in '+course.title+'!\n\nPlease pay the course fee to unlock content.');
+    renderStudentCourses();updateCounts();
+}
+
+/* ==================== STUDENT RESULTS ==================== */
+function renderStudentResults(){
+    const container=document.getElementById('studentResultsTable');
+    const results=DB.get('examResults').filter(r=>r.userId===currentUser.id);
+    const catResults=DB.get('catResults').filter(r=>r.userId===currentUser.id);
+    const courses=DB.get('courses');
+    const all=[...results.map(r=>({...r,assessmentType:'Final Exam'})),...catResults.map(r=>({...r,assessmentType:'CAT'}))].sort((a,b)=>new Date(b.submittedAt||b.completedAt||0)-new Date(a.submittedAt||a.completedAt||0));
+    if(all.length===0){container.innerHTML='<p style="color:var(--text-secondary);text-align:center;padding:2rem">No results yet.</p>';return;}
+    container.innerHTML=`<div class="table-wrapper"><table><thead><tr><th>Course Code</th><th>Course Name</th><th>Assessment</th><th>Score</th><th>%</th><th>Date & Time</th><th>Status</th></tr></thead><tbody>
+        ${all.map(r=>{
+            const course=courses.find(c=>c.id===r.courseId);
+            const dt=new Date(r.submittedAt||r.completedAt||Date.now());
+            return `<tr>
+                <td><strong style="color:var(--navy)">${esc(course?.code||'N/A')}</strong></td>
+                <td>${esc(course?.title||'Unknown')}</td>
+                <td><span class="badge ${r.assessmentType==='Final Exam'?'badge-success':'badge-warning'}">${r.assessmentType}</span></td>
+                <td><strong>${r.score||0}/${r.totalMarks||100}</strong></td>
+                <td><strong>${r.percentage||0}%</strong></td>
+                <td><div style="font-size:0.85rem">${dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}<br><span style="color:var(--text-secondary)">${dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span></div></td>
+                <td><span class="badge ${r.passed?'badge-passed':'badge-failed'}">${r.passed?'✅ PASSED':'❌ FAILED'}</span></td>
+            </tr>`;
+        }).join('')}
+    </tbody></table></div>`;
+}
+
+/* ==================== STUDENT EXAMS ==================== */
+function renderStudentExams(){
+    const c=document.getElementById('studentExamsContent');
+    const enr=DB.get('enrollments').filter(e=>e.userId===currentUser.id);
+    const courses=DB.get('courses');
+    const examResults=DB.get('examResults').filter(r=>r.userId===currentUser.id);
+    const catResults=DB.get('catResults').filter(r=>r.userId===currentUser.id);
+    const available=enr.map(e=>{
+        const course=courses.find(x=>x.id===e.courseId);if(!course)return null;
+        return {course,examResult:examResults.find(r=>r.courseId===course.id),catResult:catResults.find(r=>r.courseId===course.id),enrollment:e};
+    }).filter(x=>x!==null);
+    if(available.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No exams or CATs available.</p>';return;}
+    c.innerHTML=available.map(({course,examResult,catResult,enrollment})=>{
+        const completedAt=enrollment.completedAt?new Date(enrollment.completedAt):null;
+        const now=new Date();
+        const catUnlock=completedAt?new Date(completedAt.getTime()+(course.catUnlockHours||24)*3600000):null;
+        const examUnlock=completedAt?new Date(completedAt.getTime()+(course.examUnlockHours||72)*3600000):null;
+        const catAvailable=completedAt&&now>=catUnlock;
+        const examAvailable=completedAt&&now>=examUnlock;
+        const paid=getPaymentStatus(currentUser.id,course.id);
+        const paymentOk=paid==='paid';
+        return `<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem;border-left:4px solid var(--gold)">
+            <h4 style="color:var(--navy)">${esc(course.title)} <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:normal">(${esc(course.code||'N/A')})</span></h4>
+            <div style="margin-top:1rem;padding:1rem;background:var(--bg);border-radius:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+                <div><strong>📝 CAT</strong> <span style="color:var(--text-secondary);font-size:0.9rem">— ${course.catQuestions?.length||0} Q • Pass: ${course.catPassMark||50}%</span>
+                <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem">${!completedAt?'⚠️ Complete lessons first':catAvailable?'✅ Available':`⏳ Unlocks ${catUnlock.toLocaleString()}`}</div></div>
+                ${catResult?`<span class="badge ${catResult.passed?'badge-passed':'badge-failed'}">${catResult.passed?'✅ PASSED':'❌ FAILED'} (${catResult.percentage}%)</span>`:
+                (catAvailable&&paymentOk?`<button class="btn btn-warning btn-sm" onclick="startCAT(${course.id})"><i class="fas fa-play"></i> Start CAT</button>`:
+                `<button class="btn btn-outline btn-sm" disabled><i class="fas fa-lock"></i> Locked</button>`)}
+            </div>
+            <div style="margin-top:0.8rem;padding:1rem;background:var(--bg);border-radius:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+                <div><strong>🎓 Final Exam</strong> <span style="color:var(--text-secondary);font-size:0.9rem">— ${course.examQuestions?.length||0} Q • Pass: ${course.examPassMark||50}%</span>
+                <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem">${!completedAt?'⚠️ Complete lessons first':examAvailable?'✅ Available':`⏳ Unlocks ${examUnlock.toLocaleString()}`}</div></div>
+                ${examResult?`<span class="badge ${examResult.passed?'badge-passed':'badge-failed'}">${examResult.passed?'✅ PASSED':'❌ FAILED'} (${examResult.percentage}%)</span>`:
+                (examAvailable&&paymentOk?`<button class="btn btn-success btn-sm" onclick="startExam(${course.id})"><i class="fas fa-play"></i> Start Exam</button>`:
+                `<button class="btn btn-outline btn-sm" disabled><i class="fas fa-lock"></i> Locked</button>`)}
+            </div>
+        </div>`;
+    }).join('');
+}
+function startCAT(courseId){alert('📝 CAT interface for course #'+courseId+' ready.\n\nActual exam questions will load here.');}
+function startExam(courseId){alert('🎓 Final Exam for course #'+courseId+' ready.\n\nActual exam questions will load here.');}
+
+/* ==================== STUDENT CERTIFICATES ==================== */
+function renderStudentCertificates(){
+    const certs=DB.get('certificates').filter(c=>c.studentName===currentUser.fullName);
+    const c=document.getElementById('studentCertificatesList');
+    if(certs.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No certificates yet.</p>';return;}
+    c.innerHTML=certs.map(cert=>`
+        <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem;border-left:4px solid var(--gold)">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+                <div><h4 style="color:var(--navy)">${esc(cert.certificateId)}</h4><p style="color:var(--text-secondary)">${esc(cert.courseName)}</p><p style="font-size:0.85rem;color:var(--text-secondary)">Issued: ${new Date(cert.issuedDate).toLocaleDateString()}</p></div>
+                <button class="btn btn-primary btn-sm" onclick="viewStudentCert('${cert.certificateId}')"><i class="fas fa-eye"></i> View</button>
+            </div>
+        </div>`).join('');
+}
+function viewStudentCert(certId){
+    const cert=DB.get('certificates').find(c=>c.certificateId===certId);if(!cert)return;
+    const w=document.getElementById('studentCertificatesList');
+    w.innerHTML=`<div style="margin-bottom:1rem"><button class="btn btn-outline btn-sm" onclick="renderStudentCertificates()"><i class="fas fa-arrow-left"></i> Back</button></div>
+        ${renderCertificateHTML(cert)}
+        <div style="text-align:center;margin:1rem 0 3rem"><button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print</button></div>`;
+}
+
+/* ==================== STUDENT PROFILE ==================== */
+function renderStudentProfile(){
+    const c=document.getElementById('studentProfileContent');
+    c.innerHTML=`
+        <div style="background:var(--white);padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow)">
+            <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem">
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700">${currentUser.fullName.charAt(0).toUpperCase()}</div>
+                <div><h2 style="color:var(--navy)">${esc(currentUser.fullName)}</h2><p style="color:var(--text-secondary)">${esc(currentUser.email)}</p><p style="color:var(--text-secondary)">Phone: ${esc(currentUser.phone||'N/A')}</p></div>
+            </div>
+            <div class="form-row"><div class="form-group"><label>Student ID</label><input type="text" value="${esc(currentUser.studentId||'N/A')}" disabled></div><div class="form-group"><label>Username</label><input type="text" value="${esc(currentUser.username)}" disabled></div></div>
+            <div class="form-row"><div class="form-group"><label>Date of Birth</label><input type="text" value="${esc(currentUser.dob||'N/A')}" disabled></div><div class="form-group"><label>Country</label><input type="text" value="${esc(currentUser.country||'N/A')}" disabled></div></div>
+        </div>`;
+}
+
+/* ==================== ADMIN ==================== */
+function updateAdminDashboard(){
+    const students=DB.get('users').filter(u=>u.role==='student');
+    const courses=DB.get('courses');
+    const certs=DB.get('certificates');
+    const enrolls=DB.get('enrollments');
+    const txs=DB.get('transactions').filter(t=>t.status==='completed');
+    const courseRevenue=txs.filter(t=>t.paymentType==='COURSE_PAYMENT').reduce((s,t)=>s+t.amount,0);
+    const activationRevenue=txs.filter(t=>t.paymentType==='ACTIVATION_FEE').reduce((s,t)=>s+t.amount,0);
+    document.getElementById('adminStats').innerHTML=`
+        <div class="stat-card"><div class="stat-number">${courses.length}</div><div class="stat-label">Total Courses</div></div>
+        <div class="stat-card green"><div class="stat-number">${students.length}</div><div class="stat-label">Students</div></div>
+        <div class="stat-card purple"><div class="stat-number">${enrolls.length}</div><div class="stat-label">Enrollments</div></div>
+        <div class="stat-card gold"><div class="stat-number">${fmtMoney(courseRevenue)}</div><div class="stat-label">Course Revenue</div></div>
+        <div class="stat-card"><div class="stat-number">${fmtMoney(activationRevenue)}</div><div class="stat-label">Activation Fees</div></div>
+        <div class="stat-card green"><div class="stat-number">${fmtMoney(courseRevenue+activationRevenue)}</div><div class="stat-label">Total Collected</div></div>
+    `;
+    const tc=document.getElementById('topCourses');
+    tc.innerHTML=courses.length===0?'<p style="color:var(--text-secondary)">No courses yet.</p>':
+        courses.slice(0,5).map(c=>`<div style="padding:0.5rem 0;border-bottom:1px solid #f0f0f0;font-size:0.9rem"><strong>${esc(c.title)}</strong> — ${fmtMoney(c.price)}</div>`).join('');
+    const re=document.getElementById('recentEnrollments');
+    re.innerHTML=enrolls.length===0?'<p style="color:var(--text-secondary)">No enrollments yet.</p>':
+        enrolls.slice(-5).reverse().map(e=>{
+            const u=DB.get('users').find(x=>x.id===e.userId);
+            const c=courses.find(x=>x.id===e.courseId);
+            return `<div style="padding:0.5rem 0;border-bottom:1px solid #f0f0f0;font-size:0.9rem">${esc(u?.fullName||'?')} → ${esc(c?.title||'?')}</div>`;
+        }).join('');
+}
+function renderAdminApplications(){
+    const apps=DB.get('applications');
+    const c=document.getElementById('adminApplicationsList');
+    if(apps.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No applications.</p>';return;}
+    c.innerHTML=`<div class="table-wrapper"><table>
+        <thead><tr><th>App ID</th><th>Name</th><th>Email</th><th>National ID</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>${apps.map(a=>`<tr>
+            <td><strong>${esc(a.applicationId)}</strong></td>
+            <td>${esc(a.fullName)}</td>
+            <td>${esc(a.email)}</td>
+            <td>${a.nationalIdImage?`<img src="${a.nationalIdImage}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewIdImage('${a.applicationId}')">`:'—'}</td>
+            <td><span class="badge ${a.status==='pending'?'badge-warning':a.status==='approved'?'badge-success':'badge-danger'}">${a.status.toUpperCase()}</span></td>
+            <td>
+                <button class="btn btn-primary btn-sm" onclick="viewApplicationDetails('${a.applicationId}')"><i class="fas fa-eye"></i> View</button>
+                ${a.status==='pending'?`
+                    <button class="btn btn-success btn-sm" onclick="approveApplication('${a.applicationId}')"><i class="fas fa-check"></i> Approve</button>
+                    <button class="btn btn-danger btn-sm" onclick="rejectApplication('${a.applicationId}')"><i class="fas fa-times"></i> Reject</button>
+                `:''}
+            </td>
+        </tr>`).join('')}</tbody></table></div>`;
+}
+function viewIdImage(appId){
+    const a=DB.get('applications').find(x=>x.applicationId===appId);if(!a||!a.nationalIdImage)return;
+    const w=window.open('');w.document.write(`<html><head><title>National ID - ${esc(a.fullName)}</title></head><body style="margin:0;display:flex;justify-content:center;align-items:center;background:#0B1F3A;height:100vh"><img src="${a.nationalIdImage}" style="max-width:95%;max-height:95%"></body></html>`);
+}
+function viewApplicationDetails(appId){
+    const a=DB.get('applications').find(x=>x.applicationId===appId);if(!a)return;
+    currentAppView=appId;
+    document.getElementById('appDetailsContent').innerHTML=`
+        <div style="background:var(--bg);padding:1rem;border-radius:12px;margin-bottom:1rem">
+            <div><strong>Application ID:</strong> ${esc(a.applicationId)}</div>
+            <div><strong>Full Name:</strong> ${esc(a.fullName)}</div>
+            <div><strong>Email:</strong> ${esc(a.email)}</div>
+            <div><strong>Phone:</strong> ${esc(a.phone||'—')}</div>
+            <div><strong>DOB:</strong> ${esc(a.dob||'—')}</div>
+            <div><strong>Country:</strong> ${esc(a.country||'—')}</div>
+            <div><strong>Status:</strong> <span class="badge badge-${a.status==='pending'?'warning':a.status==='approved'?'success':'danger'}">${a.status.toUpperCase()}</span></div>
+            <div><strong>Submitted:</strong> ${new Date(a.createdAt).toLocaleString()}</div>
+        </div>
+        <div style="margin-bottom:0.5rem"><strong>National ID Image:</strong></div>
+        ${a.nationalIdImage?`<img src="${a.nationalIdImage}" style="max-width:100%;border-radius:10px;border:2px solid #e2e8f0">`:'<p style="color:var(--text-secondary)">No ID uploaded.</p>'}
+    `;
+    document.getElementById('appDetailsModal').classList.add('active');
+}
+function closeAppDetailsModal(){document.getElementById('appDetailsModal').classList.remove('active');currentAppView=null;}
+function reuploadIdFromModal(){
+    if(!currentAppView)return;
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+    inp.onchange=(e)=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{
+        const apps=DB.get('applications');const a=apps.find(x=>x.applicationId===currentAppView);if(a){a.nationalIdImage=ev.target.result;DB.set('applications',apps);}
+        const users=DB.get('users');const u=users.find(x=>x.email===a.email);if(u){u.nationalIdImage=ev.target.result;DB.set('users',users);}
+        alert('✅ ID re-uploaded successfully.');viewApplicationDetails(currentAppView);
+    };r.readAsDataURL(f);};
+    inp.click();
+}
+function approveFromModal(){if(currentAppView){approveApplication(currentAppView);closeAppDetailsModal();}}
+function rejectFromModal(){if(currentAppView){rejectApplication(currentAppView);closeAppDetailsModal();}}
+function approveApplication(appId){
+    const apps=DB.get('applications');const a=apps.find(x=>x.applicationId===appId);if(!a)return;
+    a.status='approved';a.reviewedAt=new Date().toISOString();DB.set('applications',apps);
+    const users=DB.get('users');const u=users.find(x=>x.id===a.userId);
+    if(u){u.admissionStatus='approved_waiting_fee';DB.set('users',users);}
+    logNotification('application_approved',a.email,'Application Approved - Nexora Academy','Your application has been approved! Please log in and pay the $0.50 activation fee to activate your account.');
+    renderAdminApplications();updateCounts();
+    alert('✅ Application '+appId+' approved!\n\nStudent must now pay the $0.50 activation fee.');
+}
+function rejectApplication(appId){
+    if(!confirm('Reject this application?'))return;
+    const apps=DB.get('applications');const a=apps.find(x=>x.applicationId===appId);if(!a)return;
+    a.status='rejected';a.reviewedAt=new Date().toISOString();DB.set('applications',apps);
+    const users=DB.get('users');const u=users.find(x=>x.id===a.userId);
+    if(u){u.admissionStatus='rejected';DB.set('users',users);}
+    logNotification('application_rejected',a.email,'Application Status - Nexora Academy','We regret to inform you that your application was not successful.');
+    renderAdminApplications();updateCounts();
+    alert('❌ Application rejected.');
+}
+
+function renderAdminStudents(){
+    const students=DB.get('users').filter(u=>u.role==='student');
+    const c=document.getElementById('adminStudentsList');
+    if(students.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No students.</p>';return;}
+    const courses=DB.get('courses');
+    c.innerHTML=`<div class="table-wrapper"><table>
+        <thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Service Fee</th><th>Courses</th><th>Fee Paid</th><th>Remaining</th><th>Actions</th></tr></thead>
+        <tbody>${students.map(s=>{
+            const enr=DB.get('enrollments').filter(e=>e.userId===s.id);
+            const totalFee=enr.reduce((sum,e)=>{const cc=courses.find(x=>x.id===e.courseId);return sum+(cc?cc.price:0);},0);
+            const totalPaid=enr.reduce((sum,e)=>sum+getTotalPaid(s.id,e.courseId),0);
+            const remaining=Math.max(0,totalFee-totalPaid);
+            return `<tr>
+                <td>${esc(s.studentId||'N/A')}</td>
+                <td><strong>${esc(s.fullName)}</strong></td>
+                <td>${esc(s.email)}</td>
+                <td><span class="badge ${s.activationFeePaid?'badge-success':'badge-danger'}">${s.activationFeePaid?'✅ Paid':'❌ Unpaid'}</span></td>
+                <td>${enr.length}</td>
+                <td><strong style="color:var(--success)">${fmtMoney(totalPaid)}</strong></td>
+                <td><strong style="color:${remaining>0?'var(--danger)':'var(--success)'}">${fmtMoney(remaining)}</strong></td>
+                <td><button class="btn btn-primary btn-sm" onclick="viewStudentDetail(${s.id})"><i class="fas fa-eye"></i> View</button></td>
+            </tr>`;
+        }).join('')}</tbody></table></div>`;
+}
+function viewStudentDetail(userId){
+    const u=DB.get('users').find(x=>x.id===userId);if(!u)return;
+    const enr=DB.get('enrollments').filter(e=>e.userId===userId);
+    const courses=DB.get('courses');
+    const acts=DB.get('activities').filter(a=>a.userId===userId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const txs=DB.get('transactions').filter(t=>t.studentId===userId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const groups=DB.get('groupMemberships').filter(g=>g.userId===userId);
+    const certs=DB.get('certificates').filter(c=>c.studentName===u.fullName);
+    document.getElementById('adminStudentDetailContent').innerHTML=`
+        <button class="btn btn-outline btn-sm" onclick="navigateTo('admin-students')"><i class="fas fa-arrow-left"></i> Back</button>
+        <div style="background:var(--white);padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow);margin-top:1rem">
+            <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem">
+                <div style="width:70px;height:70px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700">${esc(u.fullName.charAt(0))}</div>
+                <div><h2 style="color:var(--navy)">${esc(u.fullName)}</h2><p style="color:var(--text-secondary)">${esc(u.email)} • ${esc(u.phone||'')}</p><p style="color:var(--text-secondary);font-size:0.9rem">Student ID: ${esc(u.studentId||'N/A')}</p></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-number">${enr.length}</div><div class="stat-label">Enrolled Courses</div></div>
+                <div class="stat-card gold"><div class="stat-number">${certs.length}</div><div class="stat-label">Certificates</div></div>
+                <div class="stat-card green"><div class="stat-number">${groups.length}</div><div class="stat-label">Groups Joined</div></div>
+                <div class="stat-card purple"><div class="stat-number">${txs.filter(t=>t.status==='completed').length}</div><div class="stat-label">Transactions</div></div>
+            </div>
+            <h3 style="color:var(--navy);margin:1.5rem 0 0.5rem">Enrolled Courses & Payment</h3>
+            ${enr.length===0?'<p style="color:var(--text-secondary)">No courses enrolled.</p>':
+            `<table><thead><tr><th>Course</th><th>Fee</th><th>Paid</th><th>Remaining</th><th>Progress</th></tr></thead><tbody>
+                ${enr.map(e=>{const course=courses.find(c=>c.id===e.courseId);if(!course)return '';const paid=getTotalPaid(userId,course.id);const rem=Math.max(0,course.price-paid);const pct=getPaymentProgress(userId,course.id);return `<tr><td><strong>${esc(course.title)}</strong></td><td>${fmtMoney(course.price)}</td><td style="color:var(--success)">${fmtMoney(paid)}</td><td style="color:${rem>0?'var(--danger)':'var(--success)'}">${fmtMoney(rem)}</td><td>${pct}%</td></tr>`;}).join('')}
+            </tbody></table>`}
+            <h3 style="color:var(--navy);margin:1.5rem 0 0.5rem">Activity Log</h3>
+            ${acts.length===0?'<p style="color:var(--text-secondary)">No activities yet.</p>':
+            `<div>${acts.slice(0,30).map(a=>`<div class="activity-item"><div class="a-icon"><i class="fas fa-${a.type==='payment'?'wallet':a.type==='enrollment'?'book':a.type==='account'?'user':a.type==='discussion'?'comments':a.type==='group'?'users':'circle'}"></i></div><div class="a-content"><div class="a-title">${esc(a.title)}</div><div style="font-size:0.85rem;color:var(--text-secondary)">${esc(a.description)}</div><div class="a-time">${new Date(a.createdAt).toLocaleString()}</div></div></div>`).join('')}</div>`}
+            <h3 style="color:var(--navy);margin:1.5rem 0 0.5rem">Transactions</h3>
+            ${txs.length===0?'<p style="color:var(--text-secondary)">No transactions.</p>':
+            `<table><thead><tr><th>Tx ID</th><th>Type</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>${txs.map(t=>`<tr><td>${esc(t.transactionId)}</td><td>${t.paymentType==='ACTIVATION_FEE'?'Activation':t.paymentType==='COURSE_PAYMENT'?'Course':t.paymentType}</td><td>${fmtMoney(t.amount)}</td><td><span class="badge badge-${t.status==='completed'?'success':'warning'}">${t.status}</span></td><td>${new Date(t.createdAt).toLocaleDateString()}</td></tr>`).join('')}</tbody></table>`}
+        </div>`;
+    navigateTo('admin-student-detail');
+}
+
+function renderAdminInstructors(){
+    const insts=DB.get('instructors');const c=document.getElementById('adminInstructorsList');
+    if(insts.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No instructors yet.</p>';return;}
+    c.innerHTML=`<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Email</th><th>Specialization</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+        ${insts.map(i=>`<tr><td><strong>${esc(i.fullName)}</strong></td><td>${esc(i.email)}</td><td>${esc(i.specialization||'—')}</td><td><span class="badge ${i.status==='active'?'badge-success':'badge-danger'}">${i.status.toUpperCase()}</span></td>
+        <td>${i.status==='active'?`<button class="btn btn-warning btn-sm" onclick="suspendInstructor(${i.id})"><i class="fas fa-user-slash"></i> Suspend</button>`:`<button class="btn btn-success btn-sm" onclick="unsuspendInstructor(${i.id})"><i class="fas fa-user-check"></i> Reactivate</button>`}
+        <button class="btn btn-danger btn-sm" onclick="deleteInstructor(${i.id})"><i class="fas fa-trash"></i> Delete</button></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function openAddInstructorModal(){document.getElementById('addInstructorModal').classList.add('active');}
+function closeAddInstructorModal(){document.getElementById('addInstructorModal').classList.remove('active');}
+function saveInstructor(e){
+    e.preventDefault();
+    const insts=DB.get('instructors');
+    const email=document.getElementById('instEmail').value;
+    if(insts.find(i=>i.email===email)){alert('❌ Instructor with this email exists.');return;}
+    const newInst={id:Date.now(),fullName:document.getElementById('instName').value,email,phone:document.getElementById('instPhone').value,specialization:document.getElementById('instSpec').value,status:'active',password:document.getElementById('instPassword').value,createdAt:new Date().toISOString()};
+    insts.push(newInst);DB.set('instructors',insts);
+    const users=DB.get('users');
+    if(!users.find(u=>u.email===email)){
+        users.push({id:newInst.id,username:email.split('@')[0],email,password:newInst.password,fullName:newInst.fullName,role:'instructor',status:'active',specialization:newInst.specialization,createdAt:new Date().toISOString()});
+        DB.set('users',users);
+    }
+    logNotification('instructor_added',email,'Welcome to Nexora Academy','You have been added as an instructor. Login with your email and password.');
+    closeAddInstructorModal();
+    document.getElementById('instName').value='';document.getElementById('instEmail').value='';document.getElementById('instPhone').value='';document.getElementById('instSpec').value='';
+    renderAdminInstructors();updateCounts();
+    alert('✅ Instructor added.');
+}
+function suspendInstructor(id){
+    if(!confirm('Suspend this instructor?'))return;
+    const insts=DB.get('instructors');const i=insts.find(x=>x.id===id);if(!i)return;
+    i.status='suspended';DB.set('instructors',insts);
+    const users=DB.get('users');const u=users.find(x=>x.id===id||x.email===i.email);
+    if(u){u.status='suspended';DB.set('users',users);}
+    logNotification('instructor_suspended',i.email,'Account Suspended','Your instructor account has been suspended.');
+    renderAdminInstructors();
+    alert('🚫 Instructor suspended.');
+}
+function unsuspendInstructor(id){
+    const insts=DB.get('instructors');const i=insts.find(x=>x.id===id);if(!i)return;
+    i.status='active';DB.set('instructors',insts);
+    const users=DB.get('users');const u=users.find(x=>x.id===id||x.email===i.email);
+    if(u){u.status='active';DB.set('users',users);}
+    renderAdminInstructors();
+    alert('✅ Instructor reactivated.');
+}
+function deleteInstructor(id){
+    if(!confirm('⚠️ Delete this instructor permanently?'))return;
+    let insts=DB.get('instructors');const i=insts.find(x=>x.id===id);if(!i)return;
+    insts=insts.filter(x=>x.id!==id);DB.set('instructors',insts);
+    let users=DB.get('users');users=users.filter(x=>!(x.id===id||x.email===i.email));DB.set('users',users);
+    logNotification('instructor_deleted',i.email,'Account Removed','Your instructor account has been removed.');
+    renderAdminInstructors();updateCounts();
+    alert('🗑️ Instructor deleted.');
+}
+
+function renderAdminCourses(){
+    const cs=DB.get('courses');const c=document.getElementById('adminCoursesList');
+    if(cs.length===0){c.innerHTML='<p style="color:var(--text-secondary);grid-column:1/-1">No courses yet.</p>';return;}
+    c.innerHTML=cs.map(course=>`
+        <div class="course-card">
+            <div class="course-image">${course.image?`<img src="${course.image}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
+            <div class="course-body">
+                <h3 class="course-title">${esc(course.title)}</h3>
+                <div class="course-meta"><span><i class="fas fa-tag"></i> ${esc(course.code||'N/A')}</span><span><i class="fas fa-clock"></i> ${esc(course.duration||'N/A')}</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.8rem">
+                    <span style="font-weight:700;color:var(--gold)">${fmtMoney(course.price)}</span>
+                    <span class="badge badge-${course.status}">${course.status}</span>
+                </div>
+                <div class="course-card-actions">
+                    <button class="btn btn-primary btn-sm" onclick="editCourse(${course.id})"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-warning btn-sm" onclick="toggleCourseStatus(${course.id})">${course.status==='published'?'<i class="fas fa-eye-slash"></i> Unpublish':'<i class="fas fa-eye"></i> Publish'}</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteCourse(${course.id})"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+function editCourse(courseId){
+    const course=DB.get('courses').find(c=>c.id===courseId);if(!course)return;
+    courseData=JSON.parse(JSON.stringify(course));
+    examQuestions=course.examQuestions||[];catQuestions=course.catQuestions||[];
+    editingCourseId=courseId;
+    document.getElementById('courseTitle').value=course.title||'';
+    document.getElementById('courseCode').value=course.code||'';
+    document.getElementById('courseCategory').value=course.category||'IT & Technology';
+    document.getElementById('courseLevel').value=course.level||'Beginner';
+    document.getElementById('courseDescription').value=course.description||'';
+    document.getElementById('courseInstructor').value=course.instructor||'Dr. Kelvin M. Obieing';
+    document.getElementById('courseDuration').value=course.duration||'';
+    document.getElementById('coursePrice').value=course.price||0;
+    document.getElementById('examQuestions').value=course.examQuestions?.length||10;
+    document.getElementById('examPassMark').value=course.examPassMark||50;
+    document.getElementById('catQuestions').value=course.catQuestions?.length||5;
+    document.getElementById('catPassMark').value=course.catPassMark||50;
+    document.getElementById('catUnlockHours').value=course.catUnlockHours||24;
+    document.getElementById('examUnlockHours').value=course.examUnlockHours||72;
+    document.getElementById('courseStatusBadge').textContent=course.status;
+    document.getElementById('courseStatusBadge').className='badge badge-'+course.status;
+    if(course.image){document.getElementById('imagePreview').src=course.image;document.getElementById('imagePreviewContainer').style.display='block';}
+    renderModules();renderExamQ();renderCATQ();
+    navigateTo('admin-builder');
+    alert('✏️ Editing: '+course.title);
+}
+function toggleCourseStatus(courseId){
+    const cs=DB.get('courses');const c=cs.find(x=>x.id===courseId);if(!c)return;
+    c.status=c.status==='published'?'draft':'published';DB.set('courses',cs);
+    renderAdminCourses();
+    alert('✅ Course '+(c.status==='published'?'published':'unpublished'));
+}
+function deleteCourse(courseId){
+    if(!confirm('⚠️ Delete this course permanently?'))return;
+    let cs=DB.get('courses');cs=cs.filter(c=>c.id!==courseId);DB.set('courses',cs);
+    renderAdminCourses();updateCounts();
+    alert('🗑️ Course deleted.');
+}
+function renderAdminExams(){
+    const cs=DB.get('courses').filter(c=>(c.examQuestions&&c.examQuestions.length>0)||(c.catQuestions&&c.catQuestions.length>0));
+    const c=document.getElementById('adminExamsList');
+    if(cs.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No exams.</p>';return;}
+    c.innerHTML=cs.map(course=>`<div style="background:var(--white);padding:1.5rem;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1rem;border-left:4px solid var(--gold)"><h4 style="color:var(--navy)">${esc(course.title)}</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem;font-size:0.9rem"><div><strong>Exam:</strong> ${course.examQuestions?.length||0} Q | Pass: ${course.examPassMark||50}% | Unlock: ${course.examUnlockHours||72}h</div><div><strong>CAT:</strong> ${course.catQuestions?.length||0} Q | Pass: ${course.catPassMark||50}% | Unlock: ${course.catUnlockHours||24}h</div></div></div>`).join('');
+}
+function renderAdminCertificates(){
+    const reqs=DB.get('certificateRequests');
+    const certs=DB.get('certificates');
+    const c=document.getElementById('adminCertificatesList');
+    c.innerHTML=`
+        <h3 style="color:var(--navy);margin-bottom:1rem">Pending Certificate Approvals</h3>
+        ${reqs.filter(r=>r.status==='pending').length===0?'<p style="color:var(--text-secondary)">No pending certificate requests.</p>':
+        `<div class="table-wrapper" style="margin-bottom:2rem"><table><thead><tr><th>Request ID</th><th>Student</th><th>Course</th><th>Requested</th><th>Actions</th></tr></thead><tbody>
+            ${reqs.filter(r=>r.status==='pending').map(r=>`<tr>
+                <td><strong>${esc(r.requestId)}</strong></td>
+                <td>${esc(r.studentName)}</td>
+                <td>${esc(r.courseName)}</td>
+                <td>${new Date(r.requestedAt).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="approveCertificateRequest('${r.requestId}')"><i class="fas fa-check"></i> Approve & Issue</button>
+                    <button class="btn btn-danger btn-sm" onclick="rejectCertificateRequest('${r.requestId}')"><i class="fas fa-times"></i> Reject</button>
+                </td>
+            </tr>`).join('')}
+        </tbody></table></div>`}
+        <h3 style="color:var(--navy);margin-bottom:1rem">Issued Certificates</h3>
+        ${certs.length===0?'<p style="color:var(--text-secondary)">No certificates issued.</p>':
+        `<div class="table-wrapper"><table><thead><tr><th>Certificate ID</th><th>Student</th><th>Course</th><th>Issued</th></tr></thead><tbody>
+            ${certs.map(x=>`<tr><td><strong>${esc(x.certificateId)}</strong></td><td>${esc(x.studentName)}</td><td>${esc(x.courseName)}</td><td>${new Date(x.issuedDate).toLocaleDateString()}</td></tr>`).join('')}
+        </tbody></table></div>`}`;
+}
+function approveCertificateRequest(requestId){
+    const reqs=DB.get('certificateRequests');const r=reqs.find(x=>x.requestId===requestId);if(!r)return;
+    r.status='approved';r.approvedAt=new Date().toISOString();DB.set('certificateRequests',reqs);
+    const course=DB.get('courses').find(c=>c.id===r.courseId);
+    const certId=genCertId(course?.code||'CRS');
+    const certs=DB.get('certificates');
+    certs.push({id:Date.now(),certificateId:certId,verificationToken:'VERIFY-'+Date.now()+'-'+Math.random().toString(36).substr(2,9),studentName:r.studentName,studentId:r.studentId,courseName:r.courseName,courseDuration:course?.duration||'N/A',grade:'Competent',issuedDate:new Date().toISOString(),enrollmentId:r.enrollmentId});
+    DB.set('certificates',certs);
+    logNotification('certificate_issued',r.studentEmail,'Certificate Issued - Nexora Academy','Congratulations! Your certificate for '+r.courseName+' has been issued. Certificate ID: '+certId);
+    logActivity(r.userId,'certificate','Certificate Issued',certId);
+    renderAdminCertificates();
+    alert('✅ Certificate approved and issued: '+certId);
+}
+function rejectCertificateRequest(requestId){
+    if(!confirm('Reject this certificate request?'))return;
+    const reqs=DB.get('certificateRequests');const r=reqs.find(x=>x.requestId===requestId);if(!r)return;
+    r.status='rejected';DB.set('certificateRequests',reqs);
+    logNotification('certificate_rejected',r.studentEmail,'Certificate Request Update','Your certificate request was not approved at this time.');
+    renderAdminCertificates();
+}
+function renderRevenue(){
+    const txs=DB.get('transactions').filter(t=>t.status==='completed');
+    const courseRev=txs.filter(t=>t.paymentType==='COURSE_PAYMENT').reduce((s,t)=>s+t.amount,0);
+    const actRev=txs.filter(t=>t.paymentType==='ACTIVATION_FEE').reduce((s,t)=>s+t.amount,0);
+    document.getElementById('revenueStats').innerHTML=`
+        <div class="stat-card gold"><div class="stat-number">${fmtMoney(courseRev)}</div><div class="stat-label">Course Revenue</div></div>
+        <div class="stat-card green"><div class="stat-number">${fmtMoney(actRev)}</div><div class="stat-label">Activation Fees Revenue</div></div>
+        <div class="stat-card purple"><div class="stat-number">${fmtMoney(courseRev+actRev)}</div><div class="stat-label">Total Collected</div></div>
+        <div class="stat-card"><div class="stat-number">${txs.length}</div><div class="stat-label">Total Transactions</div></div>
+    `;
+}
+function renderAdminPayments(){
+    const txs=DB.get('transactions').sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const c=document.getElementById('adminPaymentsList');
+    if(txs.length===0){c.innerHTML='<p style="color:var(--text-secondary)">No payments yet.</p>';return;}
+    c.innerHTML=`<div class="table-wrapper"><table><thead><tr><th>Tx ID</th><th>Student</th><th>Type</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
+        ${txs.map(t=>{const u=DB.get('users').find(x=>x.id===t.studentId);const course=t.courseId?DB.get('courses').find(c=>c.id===t.courseId):null;return `<tr>
+            <td><strong>${esc(t.transactionId)}</strong></td>
+            <td>${esc(u?.fullName||t.studentEmail||'?')}</td>
+            <td>${t.paymentType==='ACTIVATION_FEE'?'🔓 Activation':t.paymentType==='COURSE_PAYMENT'?`📚 ${esc(course?.title||'Course')}`:esc(t.paymentType)}</td>
+            <td>${esc(t.paymentMethod||'—')}</td>
+            <td><strong>${fmtMoney(t.amount)}</strong></td>
+            <td><span class="badge badge-${t.status==='completed'?'success':'warning'}">${t.status}</span></td>
+            <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+        </tr>`;}).join('')}
+    </tbody></table></div>`;
+}
+
+/* ==================== COURSE BUILDER (simplified 5-step) ==================== */
+function initBuilder(){
+    if(!editingCourseId&&!courseData.id)courseData.id=Date.now();
+    goToStep(0);renderModules();renderExamQ();renderCATQ();
+}
+function goToStep(n){
+    currentStep=n;
+    document.querySelectorAll('.step-content').forEach(el=>el.classList.add('hidden'));
+    const t=document.getElementById('step-'+n);if(t)t.classList.remove('hidden');
+}
+function saveBasicInfo(){
+    courseData.title=document.getElementById('courseTitle').value;
+    courseData.code=document.getElementById('courseCode').value;
+    courseData.category=document.getElementById('courseCategory').value;
+    courseData.level=document.getElementById('courseLevel').value;
+    courseData.description=document.getElementById('courseDescription').value;
+    courseData.instructor=document.getElementById('courseInstructor').value;
+    courseData.duration=document.getElementById('courseDuration').value;
+    if(uploadedImageData)courseData.image=uploadedImageData;
+    if(!courseData.title){alert('⚠️ Course title required');return;}
+    goToStep(1);
+}
+function addModule(){const name=prompt('Module name:');if(!name)return;courseData.modules.push({title:name,lessons:[]});renderModules();}
+function renderModules(){
+    const c=document.getElementById('modulesContainer');
+    if(!courseData.modules||courseData.modules.length===0){c.innerHTML='<p style="color:var(--text-secondary);text-align:center;padding:1rem">No modules yet.</p>';return;}
+    c.innerHTML=courseData.modules.map((m,mi)=>`<div style="background:var(--bg);border-radius:12px;padding:1rem;margin-bottom:1rem;border:1px solid #e2e8f0"><div style="display:flex;justify-content:space-between"><strong>${esc(m.title)}</strong><button class="btn btn-danger btn-sm" onclick="deleteModule(${mi})"><i class="fas fa-trash"></i></button></div><div style="margin-top:0.5rem">${(m.lessons||[]).map(l=>`<div style="background:var(--white);padding:0.4rem 0.6rem;border-radius:6px;margin:0.3rem 0;font-size:0.85rem">📄 ${esc(l.title)}</div>`).join('')}</div><button class="btn btn-primary btn-sm" style="margin-top:0.5rem" onclick="addLesson(${mi})"><i class="fas fa-plus"></i> Add Lesson</button></div>`).join('');
+}
+function deleteModule(i){if(confirm('Delete?')){courseData.modules.splice(i,1);renderModules();}}
+function addLesson(mi){const title=prompt('Lesson title:');if(!title)return;if(!courseData.modules[mi].lessons)courseData.modules[mi].lessons=[];courseData.modules[mi].lessons.push({title});renderModules();}
+function addExamQuestion(){examQuestions.push({question:'',type:'multiple-choice',options:['','','',''],correct:0,marks:1});renderExamQ();}
+function renderExamQ(){
+    const c=document.getElementById('examQuestionsContainer');
+    if(examQuestions.length===0){c.innerHTML='<p style="color:var(--text-secondary);font-size:0.85rem">No exam questions.</p>';return;}
+    c.innerHTML=examQuestions.map((q,i)=>`<div style="background:var(--bg);border-radius:8px;padding:0.8rem;margin-bottom:0.5rem;font-size:0.85rem"><div><strong>Q${i+1}:</strong> ${esc(q.question)}</div><button class="btn btn-danger btn-sm" onclick="examQuestions.splice(${i},1);renderExamQ();"><i class="fas fa-trash"></i></button></div>`).join('');
+}
+function addCATQuestion(){catQuestions.push({question:'',type:'multiple-choice',options:['','','',''],correct:0,marks:5});renderCATQ();}
+function renderCATQ(){
+    const c=document.getElementById('catQuestionsContainer');
+    if(catQuestions.length===0){c.innerHTML='<p style="color:var(--text-secondary);font-size:0.85rem">No CAT questions.</p>';return;}
+    c.innerHTML=catQuestions.map((q,i)=>`<div style="background:var(--bg);border-radius:8px;padding:0.8rem;margin-bottom:0.5rem;font-size:0.85rem"><div><strong>CAT${i+1}:</strong> ${esc(q.question)}</div><button class="btn btn-danger btn-sm" onclick="catQuestions.splice(${i},1);renderCATQ();"><i class="fas fa-trash"></i></button></div>`).join('');
+}
+function saveDraft(){
+    courseData.status='draft';
+    courseData.price=parseFloat(document.getElementById('coursePrice').value)||0;
+    courseData.examQuestions=examQuestions;courseData.catQuestions=catQuestions;
+    courseData.examPassMark=parseInt(document.getElementById('examPassMark').value)||50;
+    courseData.catPassMark=parseInt(document.getElementById('catPassMark').value)||50;
+    courseData.catUnlockHours=parseInt(document.getElementById('catUnlockHours').value)||24;
+    courseData.examUnlockHours=parseInt(document.getElementById('examUnlockHours').value)||72;
+    saveCourseDB();
+    document.getElementById('courseStatusBadge').textContent='Draft';
+    document.getElementById('courseStatusBadge').className='badge badge-draft';
+    alert('💾 Saved as draft.');
+    updateCounts();renderAdminCourses();
+}
+function publishCourse(){
+    courseData.title=document.getElementById('courseTitle').value||courseData.title;
+    if(!courseData.title){alert('⚠️ Course title required');return;}
+    courseData.price=parseFloat(document.getElementById('coursePrice').value)||0;
+    courseData.examQuestions=examQuestions;courseData.catQuestions=catQuestions;
+    courseData.examPassMark=parseInt(document.getElementById('examPassMark').value)||50;
+    courseData.catPassMark=parseInt(document.getElementById('catPassMark').value)||50;
+    courseData.catUnlockHours=parseInt(document.getElementById('catUnlockHours').value)||24;
+    courseData.examUnlockHours=parseInt(document.getElementById('examUnlockHours').value)||72;
+    courseData.status='published';
+    saveCourseDB();
+    document.getElementById('courseStatusBadge').textContent='Published';
+    document.getElementById('courseStatusBadge').className='badge badge-published';
+    alert('🎉 Course published!');
+    updateCounts();renderAdminCourses();
+}
+function saveCourseDB(){
+    const cs=DB.get('courses');const i=cs.findIndex(c=>c.id===courseData.id);
+    if(i>-1)cs[i]={...courseData};else cs.push({...courseData});
+    DB.set('courses',cs);
+}
+function handleImageUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{uploadedImageData=ev.target.result;document.getElementById('imagePreview').src=uploadedImageData;document.getElementById('imagePreviewContainer').style.display='block';};r.readAsDataURL(f);}
+
+/* ==================== INIT ==================== */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSidebar();closeAppDetailsModal();closePayCourseModal();}});
+window.addEventListener('resize',()=>{if(window.innerWidth>768&&sidebarOpen)document.getElementById('mainContent').classList.add('sidebar-open');else if(window.innerWidth<=768)document.getElementById('mainContent').classList.remove('sidebar-open');});
+
+console.log('🎓 Nexora Academy - Wallet & Payment System ready');
+console.log('👤 Admin: admin@nexora.com / admin123');
+console.log('👤 Student: brian@nexora.com / student123');
+console.log('💡 Lipa Mdogo Mdogo: Students pay what they can, unlock access proportionally');
+</script>
+</body>
+</html>
